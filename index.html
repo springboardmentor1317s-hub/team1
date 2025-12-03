@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusEventHub - Register</title>
+    <link rel="stylesheet" href="styles.css"> </head>
+<body>
+
+    <header class="navbar">
+        <div class="logo-text">CampusEventHub</div>
+        <nav class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">Events</a>
+            <a href="#">Contact</a>
+            <a href="#" class="login-btn">Login</a>
+        </nav>
+    </header>
+
+    <div class="main-container">
+        <div class="signup-panel">
+            <div class="visual-side">
+                
+                <div class="event-hub-logo-placeholder">
+                    <p class="logo-text-the">The</p>
+                    <p class="logo-text-event">EVENT</p>
+                    <p class="logo-text-hub">Hub</p>
+                </div>
+            </div>
+
+            <div class="form-side">
+                <div class="form-header">
+                    <h2>Welcome</h2>
+                    <p>Join the Campus Event Hub</p>
+                </div>
+
+                <form class="registration-form">
+                    <div class="input-group">
+                        <label for="full-name">Full name:</label>
+                        <input type="text" id="full-name" placeholder="Enter your full name" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" placeholder="Enter your name" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" placeholder="Enter your Password" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="confirm-password">Confirm Password:</label>
+                        <input type="password" id="confirm-password" placeholder="Confirm Password" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" placeholder="Enter your email" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="role">Role:</label>
+                        <select id="role" required>
+                            <option value="" disabled selected>Enter your Role</option>
+                            <option value="student">Student</option>
+                            <option value="faculty">Faculty</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="register-btn">Register</button>
+                    
+                    <p class="signin-link">
+                        Already have an account? <a href="#">Sign in</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="mobile-footer-btns">
+        <button class="mobile-signup-btn">Sign up</button>
+        <button class="mobile-login-btn">Log in</button>
+    </div>
+
+</body>
+</html>
