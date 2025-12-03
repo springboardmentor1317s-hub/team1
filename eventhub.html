@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CampusEventHub – Login</title>
+  <style>
+    
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: url("https://img.freepik.com/premium-photo/bright-spotlight-stage-with-black-podium-golden-glitter_1235831-34993.jpg") center/cover no-repeat fixed;
+      animation: moveBackground 200s linear infinite;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    @keyframes moveBackground {
+      0% { background-position: 0 0; }
+      100% { background-position: 1000px 0; }
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      pointer-events: none;
+    }
+
+    
+    .container {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+      text-align: center;
+      color: #fff;
+    }
+
+   
+    .animated-text {
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-shadow: 0 4px 18px rgba(0,0,0,0.6);
+      animation: textMotion 3s ease-in-out infinite;
+      margin-bottom: 6px;
+    }
+    @keyframes textMotion {
+      0% { transform: translateY(0); opacity: 1; }
+      50% { transform: translateY(-12px); opacity: 0.85; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    .subtitle { margin: 0 0 24px; opacity: 0.9; }
+
+  
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255,255,255,0.95);
+      color: #111;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      overflow: hidden;
+      backdrop-filter: blur(3px);
+    }
+    .card-header {
+      background: linear-gradient(90deg, #ffca28, #ffa000);
+      color: #222;
+      padding: 14px 18px;
+      font-weight: 600;
+    }
+    .card-body { padding: 18px; }
+
+    /* Forms */
+    form { display: none; }
+    form.active { display: block; }
+    label { display: block; margin: 10px 0 6px; font-weight: 600; }
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      outline: none;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    input:focus, select:focus { border-color: #ffa000; box-shadow: 0 0 0 3px rgba(255,160,0,0.2); }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    button {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-primary { background: #1976d2; color: #fff; }
+    .btn-secondary { background: #455a64; color: #fff; }
+    .btn-link { background: transparent; color: #1976d2; text-decoration: underline; padding: 0; }
+
+    .hint { font-size: 14px; margin-top: 8px; }
+    .error { display: none; color: #c62828; font-weight: 600; margin-top: 10px; }
+
+    /* Footer link */
+    .footer { margin-top: 18px; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+  <div class="container">
+    <h1 class="animated-text">CampusEventHub</h1>
+    <p class="subtitle">Inter-College Event Management Platform</p>
+
+    <div class="card">
+      <div class="card-header">Welcome</div>
+      <div class="card-body">
+        <!-- LOGIN FORM (default) -->
+        <form id="loginForm" class="active">
+          <h3>Login</h3>
+          <label for="loginEmail">Email</label>
+          <input id="loginEmail" type="email" placeholder="you@example.com" required />
+
+          <label for="loginPassword">Password</label>
+          <input id="loginPassword" type="password" placeholder="Enter password" required />
+
+          <div class="actions">
+            <button class="btn-primary" type="submit">Login</button>
+            <button class="btn-link" type="button" onclick="showSignup()">Create an account</button>
+          </div>
+        </form>
+
+        <!-- SIGNUP FORM -->
+        <form id="signupForm" action="#" method="post">
+          <h3>Sign Up</h3>
+          <label for="name">Full name</label>
+          <input type="text" id="name" name="name" placeholder="Your full name" required />
+
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required />
+
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" minlength="8" placeholder="Min 8 characters" required />
+
+          <label for="college">College name</label>
+          <input type="text" id="college" name="college" placeholder="Your college" required />
+
+          <h4 style="margin-top:14px;">Select your role</h4>
+          <label for="role">Choose role</label>
+          <select id="role" name="role" required>
+            <option value="">--Select--</option>
+            <option value="1">Student</option>
+            <option value="2">Admin</option>
+          </select>
+
+          <div class="actions">
+            <button class="btn-secondary" type="button" onclick="openPage()">Continue</button>
+            <button class="btn-primary" type="submit">Create Account</button>
+            <button class="btn-link" type="button" onclick="showLogin()">Back to login</button>
+          </div>
+
+          <p id="errorMessage" class="error">Selected role page is not available yet.</p>
+          <p class="hint">We’ll never share your information.</p>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer">For admin login click Continue after selecting Admin role.</div>
+  </div>
+
+  <script>
+    function showSignup() {
+      document.getElementById("loginForm").classList.remove("active");
+      document.getElementById("signupForm").classList.add("active");
+    }
+    function showLogin() {
+      document.getElementById("signupForm").classList.remove("active");
+      document.getElementById("loginForm").classList.add("active");
+    }
+    function openPage() {
+      const role = document.getElementById("role").value;
+      const errorEl = document.getElementById("errorMessage");
+      if (!role) {
+        alert("Please select a role first!");
+        return;
+      }
+      const page = `role${role}.html`; // role1.html / role2.html
+      errorEl.style.display = "none";
+      fetch(page)
+        .then((response) => {
+          if (response.ok) {
+            window.location.href = page;
+          } else {
+            errorEl.style.display = "block";
+          }
+        })
+        .catch(() => {
+          errorEl.style.display = "block";
+        });
+    }
+
+    // Live handlers: call backend APIs
+    document.getElementById("loginForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          alert(data.error || "Login failed");
+          return;
+        }
+        localStorage.setItem("ceh_token", data.token);
+        localStorage.setItem("ceh_user", JSON.stringify(data.user));
+        const role = data.user.role;
+        // Navigate based on role
+        const page = role === "student" ? "role1.html" : "role2.html";
+        window.location.href = page;
+      } catch (err) {
+        alert("Network error during login");
+      }
+    });
+
+    document.getElementById("signupForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const college = document.getElementById("college").value.trim();
+      const roleVal = document.getElementById("role").value;
+      const role = roleVal === "1" ? "student" : roleVal === "2" ? "college_admin" : "student";
+      try {
+        const res = await fetch("/api/auth/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password, college, role })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          alert(data.error || "Signup failed");
+          return;
+        }
+        localStorage.setItem("ceh_token", data.token);
+        localStorage.setItem("ceh_user", JSON.stringify(data.user));
+        const page = role === "student" ? "role1.html" : "role2.html";
+        window.location.href = page;
+      } catch (err) {
+        alert("Network error during signup");
+      }
+    });
+  </script>
+</body>
+</html>
+

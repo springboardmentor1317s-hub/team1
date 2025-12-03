@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student – CampusEventHub</title>
+  <style>
+    :root {
+      --primary: #1976d2;
+      --bg: #f5f7fb;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --card: #ffffff;
+      --border: #e5e7eb;
+    }
+    body { font-family: Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); }
+    header { background: var(--primary); color: #fff; padding: 16px; }
+    header .row { display: flex; align-items: center; justify-content: space-between; max-width: 1100px; margin: 0 auto; }
+    header .user { font-size: 14px; opacity: 0.9; }
+    .container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+    .toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+    .toolbar input, .toolbar select { padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,0.06); overflow: hidden; display: flex; flex-direction: column; }
+    .card .content { padding: 14px 16px; }
+    .card h3 { margin: 0 0 6px; font-size: 18px; }
+    .meta { font-size: 13px; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; }
+    .desc { margin: 10px 0; font-size: 14px; color: #374151; }
+    .actions { display: flex; gap: 8px; margin-top: auto; padding: 12px 16px; border-top: 1px solid var(--border); }
+    button, a.btn { padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .empty { text-align: center; padding: 40px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="row">
+      <h2>CampusEventHub – Student Dashboard</h2>
+      <div class="user">
+        <span id="userInfo">Loading user...</span>
+        <a class="btn" style="margin-left:10px; background:#ef4444; color:#fff; text-decoration:none;" href="eventhub.html" onclick="logout()">Logout</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="toolbar">
+      <input type="text" id="search" placeholder="Search by title or college" />
+      <select id="category">
+        <option value="">All categories</option>
+        <option value="sports">Sports</option>
+        <option value="hackathon">Hackathon</option>
+        <option value="cultural">Cultural</option>
+        <option value="workshop">Workshop</option>
+      </select>
+      <button class="btn-primary" onclick="loadEvents()">Refresh</button>
+    </div>
+
+    <div id="eventGrid" class="grid"></div>
+    <div id="emptyState" class="empty" style="display:none;">No events available yet.</div>
+  </div>
+
+  <script>
+    function logout() {
+      localStorage.removeItem('ceh_token');
+      localStorage.removeItem('ceh_user');
+    }
+
+    function ensureStudent() {
+      const userRaw = localStorage.getItem('ceh_user');
+      if (!userRaw) {
+        window.location.href = 'eventhub.html';
+        return null;
+      }
+      const user = JSON.parse(userRaw);
+      if (user.role !== 'student') {
+        window.location.href = 'eventhub.html';
+        return null;
+      }
+      document.getElementById('userInfo').textContent = `${user.name} (${user.college || 'N/A'})`;
+      return user;
+    }
+
+    async function loadEvents() {
+      try {
+        const res = await fetch('/api/events');
+        const data = await res.json();
+        const events = Array.isArray(data.events) ? data.events : [];
+        renderEvents(events);
+      } catch (e) {
+        document.getElementById('emptyState').style.display = 'block';
+      }
+    }
+
+    function renderEvents(events) {
+      const grid = document.getElementById('eventGrid');
+      const empty = document.getElementById('emptyState');
+      const search = document.getElementById('search').value.trim().toLowerCase();
+      const category = document.getElementById('category').value;
+
+      const filtered = events.filter(ev => {
+        const matchesSearch = !search || `${ev.title || ''} ${ev.college_id || ''}`.toLowerCase().includes(search);
+        const matchesCategory = !category || (ev.category || '').toLowerCase() === category.toLowerCase();
+        return matchesSearch && matchesCategory;
+      });
+
+      grid.innerHTML = '';
+      if (!filtered.length) {
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      for (const ev of filtered) {
+        const card = document.createElement('div');
+        card.className = 'card';
+        const content = document.createElement('div');
+        content.className = 'content';
+        const h3 = document.createElement('h3');
+        h3.textContent = ev.title || 'Untitled Event';
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        meta.textContent = `${ev.category || 'General'} • ${ev.location || 'TBA'} • ${formatDates(ev.start_date, ev.end_date)}`;
+        const desc = document.createElement('div');
+        desc.className = 'desc';
+        desc.textContent = ev.description || 'No description provided.';
+        content.appendChild(h3);
+        content.appendChild(meta);
+        content.appendChild(desc);
+
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+        const btn = document.createElement('button');
+        btn.className = 'btn-primary';
+        btn.textContent = 'Register';
+        btn.onclick = () => alert('Registration flow coming in Milestone 3');
+        const more = document.createElement('button');
+        more.className = 'btn-outline';
+        more.textContent = 'Details';
+        more.onclick = () => alert('Event details page coming soon');
+
+        actions.appendChild(btn);
+        actions.appendChild(more);
+
+        card.appendChild(content);
+        card.appendChild(actions);
+
+        grid.appendChild(card);
+      }
+    }
+
+    function formatDates(a, b) {
+      const sa = a ? new Date(a) : null;
+      const sb = b ? new Date(b) : null;
+      const fmt = (d) => d ? d.toLocaleDateString() : 'TBA';
+      return sb ? `${fmt(sa)} → ${fmt(sb)}` : fmt(sa);
+    }
+
+    // Initialize
+    ensureStudent();
+    loadEvents();
+    document.getElementById('search').addEventListener('input', loadEvents);
+    document.getElementById('category').addEventListener('change', loadEvents);
+  </script>
+</body>
+</html>
