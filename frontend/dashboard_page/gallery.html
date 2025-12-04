@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - CampusEventHub</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <h1 class="logo">CampusEventHub</h1>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="events.html" class="nav-item"><i class="fas fa-calendar-alt"></i> Events</a>
+                <a href="new-event.html" class="nav-item"><i class="fas fa-plus-circle"></i> Create Event</a>
+                <a href="participants.html" class="nav-item"><i class="fas fa-users"></i> Participants</a>
+                <a href="gallery.html" class="nav-item active"><i class="fas fa-images"></i> Gallery</a>
+                <a href="#" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+            </nav>
+            <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+
+        <div class="main-content">
+            <header class="main-header">
+                <h2>Event Photo Gallery</h2>
+                <div class="header-actions">
+                    <button class="add-event-btn"><i class="fas fa-upload"></i> Upload Photos</button>
+                    <i class="fas fa-bell notification-icon"></i>
+                    <div class="user-profile">Admin</div>
+                </div>
+            </header>
+
+            <div class="event-controls">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search albums or images...">
+                </div>
+                <div class="filter-tabs">
+                    <button class="tab active">All Events</button>
+                    <button class="tab">TechFest 2025</button>
+                    <button class="tab">Sports Meet</button>
+                    <button class="tab">Music Night</button>
+                </div>
+            </div>
+
+            <div class="photo-grid">
+                <div class="gallery-card">
+                    <div class="gallery-image-placeholder">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <h4>TechFest 2025</h4>
+                    <p class="album-details">54 Photos | Feb 6</p>
+                    <button class="btn-view">View Album</button>
+                </div>
+
+                <div class="gallery-card">
+                    <div class="gallery-image-placeholder">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <h4>Sports Meet</h4>
+                    <p class="album-details">120 Photos | Dec 20</p>
+                    <button class="btn-view">View Album</button>
+                </div>
+
+                <div class="gallery-card">
+                    <div class="gallery-image-placeholder">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <h4>Music Night</h4>
+                    <p class="album-details">35 Photos | Jan 4</p>
+                    <button class="btn-view">View Album</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="common.js"></script>
+</body>
+</html>

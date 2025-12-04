@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events - CampusEventHub</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <h1 class="logo">CampusEventHub</h1>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="events.html" class="nav-item active"><i class="fas fa-calendar-alt"></i> Events</a>
+                <a href="new-event.html" class="nav-item"><i class="fas fa-plus-circle"></i> Create Event</a>
+                <a href="#" class="nav-item"><i class="fas fa-users"></i> Participants</a>
+                <a href="#" class="nav-item"><i class="fas fa-images"></i> Gallery</a>
+                <a href="#" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+            </nav>
+            <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+
+        <div class="main-content">
+            <header class="main-header">
+                <h2>All Campus Events</h2>
+                <div class="header-actions">
+                    <a href="new-event.html" class="add-event-btn"><i class="fas fa-plus"></i> Add New Event</a>
+                    <i class="fas fa-bell notification-icon"></i>
+                    <div class="user-profile">Admin</div>
+                </div>
+            </header>
+            
+            <div class="event-controls">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="eventSearch" placeholder="Search events by title...">
+                </div>
+                <div class="filter-tabs">
+                    <button class="tab active" data-status="all">All</button>
+                    <button class="tab" data-status="ongoing">Ongoing</button>
+                    <button class="tab" data-status="upcoming">Upcoming</button>
+                    <button class="tab" data-status="completed">Completed</button>
+                    <button class="tab" data-status="pending">Pending Approval</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Event</th>
+                            <th>Date Range</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Registrations</th>
+                            <th>Manage</th>
+                        </tr>
+                    </thead>
+                    <tbody id="eventsTableBody">
+                        <tr data-status="ongoing">
+                            <td>**TechFest 2025**</td>
+                            <td>Feb 6 - Feb 8</td>
+                            <td>Workshop</td>
+                            <td><span class="status-tag ongoing">ongoing</span></td>
+                            <td>150</td>
+                            <td><button class="btn-view">View/Edit</button></td>
+                        </tr>
+                        <tr data-status="upcoming">
+                            <td>**Sports Meet**</td>
+                            <td>Dec 20 - Dec 22</td>
+                            <td>Cultural</td>
+                            <td><span class="status-tag upcoming">upcoming</span></td>
+                            <td>220</td>
+                            <td><button class="btn-view">View/Edit</button></td>
+                        </tr>
+                        <tr data-status="completed">
+                            <td>**Music Night**</td>
+                            <td>Jan 4</td>
+                            <td>Concert</td>
+                            <td><span class="status-tag completed">completed</span></td>
+                            <td>300</td>
+                            <td><button class="btn-view">View/Edit</button></td>
+                        </tr>
+                         <tr data-status="pending">
+                            <td>**Annual Meeting**</td>
+                            <td>Apr 15</td>
+                            <td>Internal</td>
+                            <td><span class="status-tag pending">pending</span></td>
+                            <td>0</td>
+                            <td><button class="btn-view">Review</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <p id="noResults" style="display:none; text-align:center; padding: 20px;">No events found matching your criteria.</p>
+
+        </div>
+    </div>
+    <script src="events.js"></script>
+    <script src="common.js"></script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CampusEventHub</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <h1 class="logo">CampusEventHub</h1>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="events.html" class="nav-item"><i class="fas fa-calendar-alt"></i> Events</a>
+                <a href="new-event.html" class="nav-item"><i class="fas fa-plus-circle"></i> Create Event</a>
+                <a href="participants.html" class="nav-item"><i class="fas fa-users"></i> Participants</a>
+                <a href="gallery.html" class="nav-item"><i class="fas fa-images"></i> Gallery</a>
+                <a href="#" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+            </nav>
+            <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+
+        <div class="main-content">
+            <header class="main-header">
+                <h2>Welcome Back 👋</h2>
+                <div class="header-actions">
+                    <i class="fas fa-bell notification-icon"></i>
+                    <div class="user-profile">Admin</div>
+                </div>
+            </header>
+
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search ...">
+            </div>
+            
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <p>Total Events</p>
+                    <span class="stat-number">3</span>
+                </div>
+                <div class="stat-card">
+                    <p>Total Registrations</p>
+                    <span class="stat-number">7</span>
+                </div>
+                <div class="stat-card">
+                    <p>Ongoing Events</p>
+                    <span class="stat-number">1</span>
+                </div>
+                <div class="stat-card">
+                    <p>Approved Events</p>
+                    <span class="stat-number">6</span>
+                </div>
+            </div>
+
+            <h3>Recent Events</h3>
+            <p class="section-subtitle">Manage all campus events from your dashboard</p>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Event</th>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Manage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>**TechFest 2025**</td>
+                            <td>Feb 6</td>
+                            <td>Workshop</td>
+                            <td><span class="status-tag ongoing">ongoing</span></td>
+                            <td><button class="btn-view">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>**Sports Meet**</td>
+                            <td>Dec 20</td>
+                            <td>Cultural</td>
+                            <td><span class="status-tag upcoming">upcoming</span></td>
+                            <td><button class="btn-view">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>**Music Night**</td>
+                            <td>Jan 4</td>
+                            <td>Concert</td>
+                            <td><span class="status-tag completed">completed</span></td>
+                            <td><button class="btn-view">View</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    <script src="common.js"></script> 
+</body>
+</html>
