@@ -1,0 +1,248 @@
+/* Universal Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    background-color: #f7f9fc; /* Light background color */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* --- Header Styling --- */
+.header {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #555;
+    margin-left: 25px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.register-btn {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 8px 16px;
+    border-radius: 5px;
+    color: #333 !important;
+    font-weight: 500 !important;
+    transition: background-color 0.2s;
+}
+
+.register-btn:hover {
+    background-color: #eee;
+}
+
+.header-divider {
+    width: 100%;
+    max-width: 1200px;
+    border: 0;
+    height: 1px;
+    background-color: #ddd;
+    margin-bottom: 50px; /* Space between header and main content */
+}
+
+/* --- Main Login Container --- */
+.login-container {
+    display: flex;
+    max-width: 900px; /* Main card width */
+    width: 90%;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    overflow: hidden; /* Important for rounding corners */
+}
+
+/* Left Panel: Illustration */
+.illustration-panel {
+    width: 50%;
+    padding: 40px;
+    background-color: #e6e6fa; /* Keep the light purple background for the padding area */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* New CSS to make the image fit inside the panel */
+.login-illustration {
+    /* Ensures the image scales down if the container shrinks */
+    max-width: 100%;
+    /* Ensures the image maintains its aspect ratio */
+    height: auto; 
+    /* The object-fit property ensures the image is contained nicely */
+    object-fit: contain; 
+}
+
+/* Right Panel: Login Form */
+.form-panel {
+    width: 50%;
+    padding: 50px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.welcome-text h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.welcome-text p {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 30px;
+}
+
+/* Form Styles */
+.login-form label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-color: #7d89f8; /* Highlight on focus */
+}
+
+.password-input-container {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #777;
+    font-size: 18px;
+    background: none; /* Remove button background */
+    border: none; /* Remove button border */
+    padding: 0;
+    line-height: 1; /* Ensure icon is centered vertically */
+    outline: none;
+}
+
+.options-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+}
+
+.remember-me input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.forgot-password {
+    color: #7d89f8; /* Primary button color for links */
+    text-decoration: none;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #7d89f8; /* Primary button color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 30px;
+    transition: background-color 0.2s;
+}
+
+.login-btn:hover {
+    background-color: #6a74e0;
+}
+
+.register-prompt {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 14px;
+    color: #555;
+}
+
+.register-prompt a {
+    color: #7d89f8;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 800px) {
+    .login-container {
+        flex-direction: column;
+        width: 90%;
+    }
+
+    .illustration-panel, .form-panel {
+        width: 100%;
+    }
+    
+    .illustration-panel {
+        padding: 30px;
+        height: 200px; /* Shrink the illustration panel on mobile */
+        border-radius: 10px 10px 0 0;
+    }
+
+    .form-panel {
+        padding: 30px;
+    }
+
+    .header {
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .nav-links {
+        margin-top: 10px;
+    }
+
+    .header-divider {
+        margin-bottom: 20px;
+    }
+}
