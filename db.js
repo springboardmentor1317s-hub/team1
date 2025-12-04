@@ -1,76 +1,153 @@
-const fs = require('fs');
-const path = require('path');
+// =====================
+// IMPORTS
+// =====================
+const mysql = require("mysql2/promise");
+const { v4: uuid } = require("uuid");
 
-const dataDir = path.resolve(__dirname, '../data');
-const usersFile = path.join(dataDir, 'users.json');
-const eventsFile = path.join(dataDir, 'events.json');
-const regsFile = path.join(dataDir, 'registrations.json');
-const feedbackFile = path.join(dataDir, 'feedback.json');
-const logsFile = path.join(dataDir, 'admin_logs.json');
+// =====================
+// MYSQL CONNECTION POOL
+// =====================
+const pool = mysql.createPool({
+  host: "localhost",
+  user: "root",
+  password: "1234",          // your password
+  database: "campus_eventhub",
+  connectionLimit: 10
+});
 
-if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-
-function read(file) {
-  if (!fs.existsSync(file)) return [];
-  try {
-    const raw = fs.readFileSync(file, 'utf-8');
-    return JSON.parse(raw || '[]');
-  } catch {
-    return [];
-  }
-}
-
-function write(file, data) {
-  fs.writeFileSync(file, JSON.stringify(data, null, 2));
-}
-
-function now() {
-  return new Date().toISOString();
-}
-
-// Simple ID generator
-function nextId(items) {
-  return (items.length ? Math.max(...items.map(i => i.id || 0)) : 0) + 1;
-}
-
-// Users API
-function getUserByEmail(email) {
-  const users = read(usersFile);
-  return users.find(u => u.email === email) || null;
-}
-
-function createUser({ name, email, password, college, role }) {
-  const users = read(usersFile);
-  const id = nextId(users);
-  const user = { id, name, email, password, college: college || null, role, created_at: now() };
-  users.push(user);
-  write(usersFile, users);
-  return user;
-}
-
-function getUserById(id) {
-  const users = read(usersFile);
-  return users.find(u => u.id === id) || null;
-}
-
-// Events (stubs for later)
-function listEvents() {
-  return read(eventsFile);
-}
-
-function createEvent({ college_id, title, description, category, location, start_date, end_date }) {
-  const events = read(eventsFile);
-  const id = nextId(events);
-  const event = { id, college_id, title, description, category, location, start_date, end_date, created_at: now() };
-  events.push(event);
-  write(eventsFile, events);
-  return event;
-}
-
-module.exports = {
-  getUserByEmail,
-  createUser,
-  getUserById,
-  listEvents,
-  createEvent,
+// =====================
+// USERS
+// =====================
+module.exports.getUserByEmail = async (email) => {
+  const [rows] = await pool.query(
+    "SELECT * FROM Users WHERE email = ?",
+    [email]
+  );
+  return rows[0] || null;
 };
+
+module.exports.getUserById = async (id) => {
+  const [rows] = await pool.query(
+    "SELECT * FROM Users WHERE id = ?",
+    [id]
+  );
+  return rows[0] || null;
+};
+
+module.exports.createUser = async ({ name, email, password, college, role }) => {
+  const id = uuid();
+
+  await pool.query(
+    "INSERT INTO Users (id, name, email, password, college, role) VALUES (?, ?, ?, ?, ?, ?)",
+    [id, name, email, password, college, role]
+  );
+
+  return { id, name, email, college, role };
+};
+
+module.exports.updateUserPassword = async (email, newPass) => {
+  const [result] = await pool.query(
+    "UPDATE Users SET password=? WHERE email=?",
+    [newPass, email]
+  );
+
+  return result.affectedRows > 0;
+};
+
+// =====================
+// PASSWORD RESET
+// =====================
+module.exports.createResetToken = async (email, token, expires_at) => {
+  await pool.query(
+    `INSERT INTO PasswordReset (email, token, expires_at, used)
+     VALUES (?, ?, ?, 0)`,
+    [email, token, expires_at]
+  );
+};
+
+module.exports.getValidResetToken = async (token) => {
+  const [rows] = await pool.query(
+    "SELECT * FROM PasswordReset WHERE token=? AND used=0 AND expires_at > NOW()",
+    [token]
+  );
+  return rows[0] || null;
+};
+
+module.exports.markResetUsed = async (token) => {
+  await pool.query(
+    "UPDATE PasswordReset SET used=1 WHERE token=?",
+    [token]
+  );
+};
+
+// =====================
+// EVENTS
+// =====================
+module.exports.listEvents = async () => {
+  const [rows] = await pool.query(
+    "SELECT * FROM Events ORDER BY start_date ASC"
+  );
+  return rows;
+};
+
+module.exports.createEvent = async (data) => {
+  const id = uuid();
+  const {
+    college_id,
+    title,
+    description,
+    category,
+    location,
+    start_date,
+    end_date
+  } = data;
+
+  await pool.query(
+    `INSERT INTO Events (id, college_id, title, description, category, location, start_date, end_date)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    [id, college_id, title, description, category, location, start_date, end_date]
+  );
+
+  return { id, ...data };
+};
+
+module.exports.deleteEvent = async (id) => {
+  await pool.query("DELETE FROM Events WHERE id = ?", [id]);
+};
+
+// =====================
+// REGISTRATIONS
+// =====================
+module.exports.createRegistration = async ({ event_id, user_id }) => {
+  const id = uuid();
+
+  await pool.query(
+    `INSERT INTO Registrations (id, event_id, user_id, status)
+     VALUES (?, ?, ?, 'confirmed')`,
+    [id, event_id, user_id]
+  );
+
+  return { id, event_id, user_id, status: "confirmed" };
+};
+
+module.exports.registrationsByEvent = async (event_id) => {
+  const [rows] = await pool.query(
+    `SELECT r.id, r.user_id, u.name, u.email, r.status, r.timestamp
+     FROM Registrations r
+     JOIN Users u ON u.id = r.user_id
+     WHERE r.event_id = ?`,
+    [event_id]
+  );
+  return rows;
+};
+
+module.exports.countRegistrationsByEvent = async (event_id) => {
+  const [rows] = await pool.query(
+    "SELECT COUNT(*) AS count FROM Registrations WHERE event_id = ?",
+    [event_id]
+  );
+  return rows[0].count;
+};
+
+// Export Pool
+module.exports.pool = pool;
