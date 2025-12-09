@@ -77,8 +77,8 @@ const AppRoutes = () => {
   console.log("Is authenticated:", isAuthenticated());
   
   return (
-    <div className="min-h-screen flex flex-col">
-      <div className="flex-1">
+    <div className="min-h-screen flex flex-col w-full">
+      <div className="flex-1 w-full">
         <Routes>
           {/* Public routes */}
           <Route path="/create-event" element={<EventCreationForm />} />

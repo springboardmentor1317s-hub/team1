@@ -30,6 +30,223 @@ const Toast = ({ message, type, onClose }) => {
   );
 };
 
+// Payment Method Selection Modal
+const PaymentMethodModal = ({ event, onSelectPayment, onCancel, isLoading }) => {
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-2 sm:p-4 animate-fadeIn">
+      <div className="bg-white rounded-2xl sm:rounded-3xl max-w-sm sm:max-w-md lg:max-w-lg w-full max-h-[95vh] sm:max-h-[90vh] relative shadow-2xl transform transition-all duration-300 scale-100 animate-modalSlideIn overflow-hidden flex flex-col">
+        {/* Decorative gradient background */}
+        <div className="absolute top-0 left-0 right-0 h-24 sm:h-32 bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500"></div>
+
+        <button
+          onClick={onCancel}
+          className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white hover:text-gray-200 transition-colors z-10 bg-black/20 rounded-full p-2 hover:bg-black/30"
+        >
+          <X className="w-4 h-4 sm:w-5 sm:h-5" />
+        </button>
+
+        <div className="relative flex-1 overflow-y-auto">
+          <div className="p-4 sm:p-6 lg:p-8">
+            {/* Header */}
+            <div className="text-center mb-6 sm:mb-8">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-xl border-4 border-white">
+                <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg sm:rounded-xl flex items-center justify-center">
+                  <DollarSign className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
+                </div>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">Choose Payment Method</h2>
+              <p className="text-gray-600 text-base sm:text-lg px-2">Select your preferred payment option</p>
+            </div>
+
+            {/* Payment Options */}
+            <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+              {/* QR Code Payment Option */}
+              <button
+                onClick={() => onSelectPayment('qr')}
+                disabled={isLoading}
+                className="w-full p-4 sm:p-6 border-2 border-blue-200 rounded-xl sm:rounded-2xl hover:border-blue-400 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-300 text-left disabled:opacity-50 disabled:cursor-not-allowed group transform hover:scale-105 hover:shadow-lg"
+              >
+                <div className="flex items-center">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl sm:rounded-2xl flex items-center justify-center mr-3 sm:mr-5 shadow-lg group-hover:shadow-xl transition-all duration-300">
+                    <img src="/payment.jpg" alt="QR Code" className="w-6 h-6 sm:w-9 sm:h-9 object-contain filter brightness-0 invert" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1">QR Code Payment</h3>
+                    <p className="text-gray-600 text-xs sm:text-sm">Scan and pay instantly with UPI</p>
+                    <div className="flex items-center mt-2 gap-1 sm:gap-2">
+                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">Fast & Secure</span>
+                      <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">No Fees</span>
+                    </div>
+                  </div>
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-full flex items-center justify-center ml-2 sm:ml-0">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                  </div>
+                </div>
+              </button>
+
+              {/* Stripe Payment Option */}
+              <button
+                onClick={() => onSelectPayment('stripe')}
+                disabled={isLoading}
+                className="w-full p-4 sm:p-6 border-2 border-purple-200 rounded-xl sm:rounded-2xl hover:border-purple-400 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-300 text-left disabled:opacity-50 disabled:cursor-not-allowed group transform hover:scale-105 hover:shadow-lg"
+              >
+                <div className="flex items-center">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl sm:rounded-2xl flex items-center justify-center mr-3 sm:mr-5 shadow-lg group-hover:shadow-xl transition-all duration-300">
+                    <svg className="w-6 h-6 sm:w-9 sm:h-9 text-white" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1">Card Payment</h3>
+                    <p className="text-gray-600 text-xs sm:text-sm">Pay securely with credit/debit card</p>
+                    <div className="flex items-center mt-2 gap-1 sm:gap-2">
+                      <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">Secure</span>
+                      <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full font-medium">International</span>
+                    </div>
+                  </div>
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-500 rounded-full flex items-center justify-center ml-2 sm:ml-0">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                  </div>
+                </div>
+              </button>
+            </div>
+
+            {/* Amount Display */}
+            <div className="text-center bg-gradient-to-r from-gray-100 to-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-300">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-2">Total Amount</p>
+              <p className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">₹{event.price}</p>
+              <p className="text-xs sm:text-sm text-gray-600 truncate px-2">{event.title}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// QR Code Payment Modal
+const QRPaymentModal = ({ event, qrImageUrl, onConfirm, onCancel, isLoading }) => {
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-2 sm:p-4 animate-fadeIn">
+      <div className="bg-white rounded-2xl sm:rounded-3xl max-w-sm sm:max-w-md lg:max-w-lg w-full max-h-[95vh] sm:max-h-[90vh] relative shadow-2xl transform transition-all duration-300 scale-100 animate-modalSlideIn overflow-hidden flex flex-col">
+        {/* Decorative gradient background */}
+        <div className="absolute top-0 left-0 right-0 h-24 sm:h-32 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500"></div>
+
+        <button
+          onClick={onCancel}
+          className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white hover:text-gray-200 transition-colors z-10 bg-black/20 rounded-full p-2 hover:bg-black/30"
+        >
+          <X className="w-4 h-4 sm:w-5 sm:h-5" />
+        </button>
+
+        <div className="relative flex-1 overflow-y-auto">
+          <div className="p-4 sm:p-6 lg:p-8">
+            {/* Header */}
+            <div className="text-center mb-6 sm:mb-8">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-xl border-4 border-white">
+                <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg sm:rounded-xl flex items-center justify-center">
+                  <svg className="w-5 h-5 sm:w-7 sm:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">Complete Your Payment</h2>
+              <p className="text-gray-600 text-base sm:text-lg px-2">Scan the QR code to pay securely</p>
+            </div>
+
+            {/* QR Code Section */}
+            <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8 border border-gray-100 shadow-inner">
+              <div className="text-center mb-4 sm:mb-6">
+                <div className="inline-block p-3 sm:p-4 bg-white rounded-xl sm:rounded-2xl shadow-lg border-2 border-gray-100">
+                  <img
+                    src={qrImageUrl}
+                    alt="Payment QR Code"
+                    className="w-40 h-40 sm:w-48 sm:h-48 lg:w-56 lg:h-56 object-contain rounded-lg"
+                  />
+                </div>
+              </div>
+
+              {/* Amount Display */}
+              <div className="text-center bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg sm:rounded-xl p-3 sm:p-4 text-white">
+                <p className="text-xs sm:text-sm font-medium opacity-90 mb-1">Payment Amount</p>
+                <p className="text-2xl sm:text-3xl font-bold">₹{event.price}</p>
+                <p className="text-xs sm:text-sm opacity-90 mt-1 truncate px-2">{event.title}</p>
+              </div>
+            </div>
+
+            {/* Instructions */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8">
+              <div className="flex items-start">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0 mt-0.5">
+                  <svg className="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-base sm:text-lg font-semibold text-blue-900 mb-2 sm:mb-3">How to Pay</h4>
+                  <div className="space-y-2 sm:space-y-3">
+                    <div className="flex items-center text-blue-800">
+                      <span className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold mr-2 sm:mr-3 flex-shrink-0">1</span>
+                      <span className="text-xs sm:text-sm">Open any UPI app (Google Pay, PhonePe, Paytm, etc.)</span>
+                    </div>
+                    <div className="flex items-center text-blue-800">
+                      <span className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold mr-2 sm:mr-3 flex-shrink-0">2</span>
+                      <span className="text-xs sm:text-sm">Scan the QR code above</span>
+                    </div>
+                    <div className="flex items-center text-blue-800">
+                      <span className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold mr-2 sm:mr-3 flex-shrink-0">3</span>
+                      <span className="text-xs sm:text-sm">Complete the payment</span>
+                    </div>
+                    <div className="flex items-center text-blue-800">
+                      <span className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold mr-2 sm:mr-3 flex-shrink-0">4</span>
+                      <span className="text-xs sm:text-sm">Click "I've Completed Payment" below</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 sm:gap-4 mb-4 sm:mb-6">
+              <button
+                onClick={onCancel}
+                disabled={isLoading}
+                className="flex-1 px-4 py-3 sm:px-6 sm:py-4 border-2 border-gray-300 rounded-xl sm:rounded-2xl font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={onConfirm}
+                disabled={isLoading}
+                className="flex-1 px-4 py-3 sm:px-6 sm:py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl sm:rounded-2xl font-semibold hover:from-green-600 hover:to-emerald-600 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transform hover:scale-105 text-sm sm:text-base"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader className="w-4 h-4 sm:w-5 sm:h-5 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                    I've Completed Payment
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Footer Note */}
+            <div className="text-center">
+              <p className="text-xs sm:text-sm text-gray-500">
+                Your registration will be confirmed after payment verification
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Registration Confirmation Modal
 const RegistrationModal = ({ event, onConfirm, onCancel, isLoading }) => {
   return (
@@ -60,7 +277,7 @@ const RegistrationModal = ({ event, onConfirm, onCancel, isLoading }) => {
               <p className="font-bold text-gray-900 truncate">{event.title}</p>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div className="flex items-center">
               <Calendar className="w-5 h-5 text-gray-400 mr-2 flex-shrink-0" />
@@ -79,7 +296,7 @@ const RegistrationModal = ({ event, onConfirm, onCancel, isLoading }) => {
               </div>
             </div>
           </div>
-          
+
           {event.price > 0 && (
             <div className="bg-white rounded-lg p-4 border border-blue-100">
               <div className="flex items-center justify-between">
@@ -129,6 +346,10 @@ export const EventRegistrationPage = () => {
   const [event, setEvent] = useState(null);
   const [registrationStatus, setRegistrationStatus] = useState('not_registered');
   const [showModal, setShowModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const [qrImageUrl, setQrImageUrl] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isRegistering, setIsRegistering] = useState(false);
   const [toast, setToast] = useState(null);
@@ -216,10 +437,30 @@ export const EventRegistrationPage = () => {
       navigate('/login', { state: { from: `/event-register/${eventId}` } });
       return;
     }
-    setShowModal(true);
+
+    // For paid events, show payment method selection first
+    if (event.price > 0) {
+      setShowPaymentModal(true);
+    } else {
+      // For free events, show confirmation modal directly
+      setShowModal(true);
+    }
   };
 
-  const handleConfirmRegistration = async () => {
+  const handlePaymentMethodSelect = (method) => {
+    setSelectedPaymentMethod(method);
+    setShowPaymentModal(false);
+
+    if (method === 'qr') {
+      // For QR payment, directly call registration with QR method
+      handleConfirmRegistration(method);
+    } else {
+      // For Stripe, show confirmation modal first
+      setShowModal(true);
+    }
+  };
+
+  const handleConfirmRegistration = async (paymentMethod = null) => {
     setIsRegistering(true);
     try {
       const token = localStorage.getItem('token');
@@ -228,26 +469,36 @@ export const EventRegistrationPage = () => {
         return;
       }
 
+      const requestBody = paymentMethod === 'qr' ? { paymentMethod: 'qr' } : {};
+
       const response = await fetch(`${API_BASE_URL}/events/${eventId}/register`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        }
+        },
+        body: Object.keys(requestBody).length > 0 ? JSON.stringify(requestBody) : undefined
       });
 
       const data = await response.json();
-      
+
       if (response.ok && data.success) {
-        // If paid event, redirect to Stripe Checkout
-        if (data.paymentUrl) {
+        if (data.paymentMethod === 'qr') {
+          // QR Code payment - show QR modal
+          setQrImageUrl(data.qrImageUrl);
+          setShowQRModal(true);
+          setShowModal(false);
+          setToast({ message: 'Registration created! Please complete payment using QR code.', type: 'success' });
+        } else if (data.paymentUrl) {
+          // Stripe payment - redirect to checkout
           window.location.href = data.paymentUrl;
           return;
+        } else {
+          // Free event flow
+          setRegistrationStatus('pending');
+          setShowModal(false);
+          setToast({ message: 'Registration submitted successfully!', type: 'success' });
         }
-        // Free event flow
-        setRegistrationStatus('pending');
-        setShowModal(false);
-        setToast({ message: 'Registration submitted successfully!', type: 'success' });
       } else {
         throw new Error(data.error || 'Registration failed');
       }
@@ -257,6 +508,18 @@ export const EventRegistrationPage = () => {
     } finally {
       setIsRegistering(false);
     }
+  };
+
+  const handleQRPaymentConfirm = () => {
+    setShowQRModal(false);
+    setToast({
+      message: 'Payment submitted! Your registration is pending admin approval. You will receive a confirmation email once payment is verified.',
+      type: 'success'
+    });
+    // Refresh registration status
+    setTimeout(() => {
+      checkRegistrationStatus();
+    }, 1000);
   };
 
   const verifyPaymentRegistration = async (sessionId) => {
@@ -380,9 +643,11 @@ export const EventRegistrationPage = () => {
               <a href="/" className="flex items-center group">
                 <div className="relative">
                   <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow">
-                    <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
+                    <img
+                      src="/A.png"
+                      alt="Logo"
+                      className="w-8 h-8 object-contain"
+                    />
                   </div>
                 </div>
                 <div className="ml-3">
@@ -640,11 +905,32 @@ export const EventRegistrationPage = () => {
         </div>
       </div>
 
+      {/* Payment Method Selection Modal */}
+      {showPaymentModal && (
+        <PaymentMethodModal
+          event={event}
+          onSelectPayment={handlePaymentMethodSelect}
+          onCancel={() => setShowPaymentModal(false)}
+          isLoading={isRegistering}
+        />
+      )}
+
+      {/* QR Code Payment Modal */}
+      {showQRModal && (
+        <QRPaymentModal
+          event={event}
+          qrImageUrl={qrImageUrl}
+          onConfirm={handleQRPaymentConfirm}
+          onCancel={() => setShowQRModal(false)}
+          isLoading={isRegistering}
+        />
+      )}
+
       {/* Registration Modal */}
       {showModal && (
         <RegistrationModal
           event={event}
-          onConfirm={handleConfirmRegistration}
+          onConfirm={() => handleConfirmRegistration(selectedPaymentMethod)}
           onCancel={() => setShowModal(false)}
           isLoading={isRegistering}
         />

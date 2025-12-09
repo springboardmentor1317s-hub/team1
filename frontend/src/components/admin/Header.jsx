@@ -15,8 +15,12 @@ const Header = ({
         <div className="flex justify-between items-center h-14 sm:h-16">
           <div className="flex items-center min-w-0 flex-1">
             <div className="flex items-center space-x-2 sm:space-x-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <Building className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
+                <img
+                  src="/A.png"
+                  alt="Logo"
+                  className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
+                />
               </div>
               <div className="min-w-0">
                 <h1 className="text-lg sm:text-2xl font-bold text-gray-900 truncate">CampusEventHub</h1>

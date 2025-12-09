@@ -20,6 +20,16 @@ const registrationSchema = new mongoose.Schema({
     type: String,
     sparse: true // Allows multiple null values
   },
+  payment_method: {
+    type: String,
+    enum: ['stripe', 'qr'],
+    default: 'stripe'
+  },
+  payment_status: {
+    type: String,
+    enum: ['pending', 'completed', 'failed'],
+    default: 'pending'
+  },
   timestamp: {
     type: Date,
     default: Date.now

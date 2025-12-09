@@ -60,90 +60,120 @@ exports.registerForEvent = async (req, res) => {
 
     // Handle payment for paid events
     if (event.price > 0) {
-      if (!stripe) {
-        return res.status(500).json({ 
-          error: 'Payment processing is temporarily unavailable. Please try again later or contact administrator.' 
-        });
-      }
+      // Check if payment method is specified in request body
+      const { paymentMethod } = req.body;
 
-      try {
-        const frontendBase = process.env.FRONTEND_URL || 'http://localhost:5173';
-        
-        // Validate required data for Stripe session
-        if (!event.title || !event._id) {
-          throw new Error('Event data incomplete for payment processing');
+      if (paymentMethod === 'qr') {
+        // QR Code payment - create registration with pending status
+        try {
+          const registration = await Registration.create({
+            event_id: eventId,
+            user_id: userId,
+            status: 'pending',
+            payment_method: 'qr',
+            payment_status: 'pending'
+          });
+
+          return res.status(200).json({
+            success: true,
+            paymentMethod: 'qr',
+            qrImageUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment.jpg`,
+            amount: event.price,
+            message: 'Please scan the QR code to complete payment. Your registration will be confirmed after payment verification.',
+            registrationId: registration._id
+          });
+        } catch (dbError) {
+          console.error('Database error creating QR registration:', dbError);
+          throw new Error('Failed to create registration record');
+        }
+      } else {
+        // Default to Stripe payment
+        if (!stripe) {
+          return res.status(500).json({
+            error: 'Payment processing is temporarily unavailable. Please try again later or contact administrator.'
+          });
         }
 
-        const sessionData = {
-          payment_method_types: ['card'],
-          mode: 'payment',
-          line_items: [{
-            price_data: {
-              currency: 'inr',
-              product_data: {
-                name: event.title,
-                description: `Registration for ${event.title} at ${event.college_name || 'Campus Event'}`,
-                images: event.image ? [`${frontendBase}/api/events/uploads/${path.basename(event.image)}`] : []
-              },
-              unit_amount: Math.round(event.price * 100), // Convert to paise (smallest currency unit)
-            },
-            quantity: 1,
-          }],
-          metadata: {
-            eventId: event._id.toString(),
-            userId: userId,
-            eventTitle: event.title,
-            userEmail: req.user.email || 'N/A'
-          },
-          customer_email: req.user.email,
-          success_url: `${frontendBase}/event-register/${eventId}?payment_success=true&session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${frontendBase}/event-register/${eventId}?payment_cancelled=true`,
-          expires_at: Math.floor(Date.now() / 1000) + (30 * 60), // 30 minutes
-        };
+        try {
+          const frontendBase = process.env.FRONTEND_URL || 'http://localhost:5173';
 
-        const session = await stripe.checkout.sessions.create(sessionData);
-
-        return res.status(200).json({
-          success: true,
-          paymentUrl: session.url,
-          sessionId: session.id,
-          amount: session.amount_total / 100, // Convert back to rupees for display
-          currency: session.currency
-        });
-
-      } catch (stripeError) {
-        console.error('Stripe session creation error:', {
-          type: stripeError.type,
-          message: stripeError.message
-        });
-
-        // Return more specific error messages based on Stripe error type
-        let errorMessage = 'Failed to create payment session.';
-        
-        if (stripeError.type === 'StripeInvalidRequestError') {
-          if (stripeError.param) {
-            errorMessage = `Invalid payment parameter: ${stripeError.param}. Please contact support.`;
-          } else {
-            errorMessage = 'Invalid payment request. Please contact support.';
+          // Validate required data for Stripe session
+          if (!event.title || !event._id) {
+            throw new Error('Event data incomplete for payment processing');
           }
-        } else if (stripeError.type === 'StripeAPIError') {
-          errorMessage = 'Payment service temporarily unavailable. Please try again.';
-        } else if (stripeError.type === 'StripeConnectionError') {
-          errorMessage = 'Network error. Please check your connection.';
-        } else if (stripeError.type === 'StripeAuthenticationError') {
-          errorMessage = 'Payment authentication failed. Please contact administrator.';
-        } else if (stripeError.type === 'StripeRateLimitError') {
-          errorMessage = 'Too many requests. Please try again later.';
-        }
 
-        return res.status(500).json({ 
-          error: errorMessage,
-          details: process.env.NODE_ENV === 'development' ? {
+          const sessionData = {
+            payment_method_types: ['card'],
+            mode: 'payment',
+            line_items: [{
+              price_data: {
+                currency: 'inr',
+                product_data: {
+                  name: event.title,
+                  description: `Registration for ${event.title} at ${event.college_name || 'Campus Event'}`,
+                  images: event.image ? [`${frontendBase}/api/events/uploads/${path.basename(event.image)}`] : []
+                },
+                unit_amount: Math.round(event.price * 100), // Convert to paise (smallest currency unit)
+              },
+              quantity: 1,
+            }],
+            metadata: {
+              eventId: event._id.toString(),
+              userId: userId,
+              eventTitle: event.title,
+              userEmail: req.user.email || 'N/A'
+            },
+            customer_email: req.user.email,
+            success_url: `${frontendBase}/event-register/${eventId}?payment_success=true&session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${frontendBase}/event-register/${eventId}?payment_cancelled=true`,
+            expires_at: Math.floor(Date.now() / 1000) + (30 * 60), // 30 minutes
+          };
+
+          const session = await stripe.checkout.sessions.create(sessionData);
+
+          return res.status(200).json({
+            success: true,
+            paymentMethod: 'stripe',
+            paymentUrl: session.url,
+            sessionId: session.id,
+            amount: session.amount_total / 100, // Convert back to rupees for display
+            currency: session.currency
+          });
+
+        } catch (stripeError) {
+          console.error('Stripe session creation error:', {
             type: stripeError.type,
-            message: stripeError.message,
-            param: stripeError.param
-          } : undefined
-        });
+            message: stripeError.message
+          });
+
+          // Return more specific error messages based on Stripe error type
+          let errorMessage = 'Failed to create payment session.';
+
+          if (stripeError.type === 'StripeInvalidRequestError') {
+            if (stripeError.param) {
+              errorMessage = `Invalid payment parameter: ${stripeError.param}. Please contact support.`;
+            } else {
+              errorMessage = 'Invalid payment request. Please contact support.';
+            }
+          } else if (stripeError.type === 'StripeAPIError') {
+            errorMessage = 'Payment service temporarily unavailable. Please try again.';
+          } else if (stripeError.type === 'StripeConnectionError') {
+            errorMessage = 'Network error. Please check your connection.';
+          } else if (stripeError.type === 'StripeAuthenticationError') {
+            errorMessage = 'Payment authentication failed. Please contact administrator.';
+          } else if (stripeError.type === 'StripeRateLimitError') {
+            errorMessage = 'Too many requests. Please try again later.';
+          }
+
+          return res.status(500).json({
+            error: errorMessage,
+            details: process.env.NODE_ENV === 'development' ? {
+              type: stripeError.type,
+              message: stripeError.message,
+              param: stripeError.param
+            } : undefined
+          });
+        }
       }
     }
 
