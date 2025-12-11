@@ -12,139 +12,131 @@ import { EventRegistrationPage } from './components/event-actions/EventRegistrat
 import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
 
-// Protected Route Component for any authenticated user
+// ⭐ TTS Import
+import TTS from "./components/TTS";
+
+// ⭐ Auto Voice Import
+import AutoTTS from "./components/AutoTTS";
+
+// ⭐ Voice Assistant Button
+import VoiceAssistantButton from "./components/VoiceAssistantButton";
+
+// Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
-  
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  }
-  
-  if (!isAuthenticated()) {
-    return <Navigate to="/login" replace />;
-  }
-  
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (!isAuthenticated()) return <Navigate to="/login" replace />;
   return children;
 };
 
-// Admin-only Route Component
+// Admin Route
 const AdminRoute = ({ children }) => {
   const { hasRole, loading, isAuthenticated } = useAuth();
-  
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  }
-  
-  if (!isAuthenticated()) {
-    return <Navigate to="/login" replace />;
-  }
-  
-  if (!hasRole(['college_admin', 'super_admin'])) {
-    return <Navigate to="/student/dashboard" replace />;
-  }
-  
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (!isAuthenticated()) return <Navigate to="/login" replace />;
+  if (!hasRole(['college_admin', 'super_admin'])) return <Navigate to="/student/dashboard" replace />;
   return children;
 };
 
-// Student-only Route Component
+// Student Route
 const StudentRoute = ({ children }) => {
   const { hasRole, currentUser, loading, isAuthenticated } = useAuth();
-  
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  }
-  
-  if (!isAuthenticated()) {
-    return <Navigate to="/login" replace />;
-  }
-  
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (!isAuthenticated()) return <Navigate to="/login" replace />;
   if (!hasRole(['student'])) {
-    // Redirect based on admin type
-    if (currentUser?.role === 'super_admin') {
-      return <Navigate to="/super-admin/dashboard" replace />;
-    }
+    if (currentUser?.role === 'super_admin') return <Navigate to="/super-admin/dashboard" replace />;
     return <Navigate to="/admin/dashboard" replace />;
   }
-  
   return children;
 };
 
-// App Component with Routes
+// App Routes
 const AppRoutes = () => {
-  const { currentUser, isAuthenticated } = useAuth();
-  
-  console.log("Current user:", currentUser);
-  console.log("Is authenticated:", isAuthenticated());
-  
+  const { currentUser } = useAuth();
+
   return (
     <div className="min-h-screen flex flex-col w-full">
+
+      {/* ⭐ AUTO-SPEAK ON PAGE LOAD */}
+      <AutoTTS text="Welcome to Campus Event Hub." />
+
+      {/* ⭐ Voice Assistant Floating Button */}
+      <VoiceAssistantButton />
+
       <div className="flex-1 w-full">
+
         <Routes>
-          {/* Public routes */}
+
+          {/* TTS Page */}
+          <Route path="/tts" element={<TTS />} />
+
+          {/* Public Pages */}
           <Route path="/create-event" element={<EventCreationForm />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/event-registration" element={<EventRegistrationPage />} />
           <Route path="/event-register/:eventId" element={<EventRegistrationPage />} />
-          
-          {/* Root route - redirect based on role */}
-          <Route 
-            path="/" 
+
+          {/* Landing redirect */}
+          <Route
+            path="/"
             element={
               <ProtectedRoute>
-                {currentUser && currentUser.role === 'student' ? (
+                {currentUser?.role === 'student' ? (
                   <Navigate to="/student/dashboard" replace />
-                ) : currentUser && currentUser.role === 'super_admin' ? (
+                ) : currentUser?.role === 'super_admin' ? (
                   <Navigate to="/super-admin/dashboard" replace />
                 ) : (
                   <Navigate to="/admin/dashboard" replace />
                 )}
               </ProtectedRoute>
-            } 
+            }
           />
-          
-          {/* Student routes */}
-          <Route 
-            path="/student/dashboard" 
+
+          {/* Student Dashboard */}
+          <Route
+            path="/student/dashboard"
             element={
               <StudentRoute>
                 <StudentDashboard />
               </StudentRoute>
-            } 
+            }
           />
-          
-          {/* Admin routes */}
-          <Route 
-            path="/admin/dashboard" 
+
+          {/* Admin Dashboard */}
+          <Route
+            path="/admin/dashboard"
             element={
               <AdminRoute>
                 <AdminDashboard />
               </AdminRoute>
-            } 
+            }
           />
-          
-          {/* Super Admin route */}
-          <Route 
-            path="/super-admin/dashboard" 
+
+          {/* Super Admin */}
+          <Route
+            path="/super-admin/dashboard"
             element={
               <AdminRoute>
                 <SuperAdminDashboard />
               </AdminRoute>
-            } 
+            }
           />
-          
-          {/* Fallback route */}
+
+          {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
+
         </Routes>
       </div>
+
       <Footer />
       <Chatbot />
     </div>
   );
 };
 
-// Main App Component
+// Main App
 const App = () => {
   return (
     <Router>
@@ -154,6 +146,5 @@ const App = () => {
     </Router>
   );
 };
-
 
 export default App;

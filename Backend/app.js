@@ -1,10 +1,11 @@
+require('dotenv').config(); // at the very top of the file
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const connectToDb = require('./db/db');
-require('dotenv').config();
+const mongoose = require('mongoose');
 
-// Import routes
+// Routes
 const authRoutes = require('./routes/authRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const activityLogRoutes = require('./routes/activityLogRoutes');
@@ -15,6 +16,12 @@ const notificationRoutes = require('./routes/notificationRoutes');
 const ticketRoutes = require('./routes/ticketRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 
+// TTS route
+const ttsRoute = require('./routes/tts.js');
+
+// ✅ Voice Assistant route (ask)
+const askRoutes = require('./routes/ask'); // <-- Add this
+
 const app = express();
 
 // Middleware
@@ -22,14 +29,19 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// ✅ TTS middleware
+app.use('/api/tts', ttsRoute);
+
+// ✅ Voice Assistant middleware
+app.use('/api/ask', askRoutes); // <-- Add this
+
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Connect to Database
-const startDb = async () => {
-    await connectToDb();
-};
-startDb();
+mongoose.connect(process.env.DB_URL)
+  .then(() => console.log('MongoDB connected successfully'))
+  .catch(err => console.log('Error connecting to MongoDB:', err));
 
 // Routes
 app.use('/api/auth', authRoutes);
