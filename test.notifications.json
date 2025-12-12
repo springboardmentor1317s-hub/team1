@@ -1,0 +1,571 @@
+[{
+  "_id": {
+    "$oid": "69338aad33a705832ba7725a"
+  },
+  "user_id": {
+    "$oid": "6932e052b3b9636fae9cdb5a"
+  },
+  "message": "New seminar event \"fsdfs\" at Jaypee Institute of Information Technology (JIIT), Noida on 12/13/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "69338aad33a705832ba77252"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-06T01:45:17.897Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69338aad33a705832ba7725b"
+  },
+  "user_id": {
+    "$oid": "6932e680de6c725347a61777"
+  },
+  "message": "New seminar event \"fsdfs\" at Jaypee Institute of Information Technology (JIIT), Noida on 12/13/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "69338aad33a705832ba77252"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-06T01:45:17.897Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69338aad33a705832ba7725c"
+  },
+  "user_id": {
+    "$oid": "6932e76ade6c725347a61794"
+  },
+  "message": "New seminar event \"fsdfs\" at Jaypee Institute of Information Technology (JIIT), Noida on 12/13/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "69338aad33a705832ba77252"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-06T01:45:17.897Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69397b799aa7661e3aa6756e"
+  },
+  "user_id": {
+    "$oid": "6932e052b3b9636fae9cdb5a"
+  },
+  "message": "New workshop event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "69397b789aa7661e3aa67566"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T13:54:01.235Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69397b799aa7661e3aa6756f"
+  },
+  "user_id": {
+    "$oid": "6932e680de6c725347a61777"
+  },
+  "message": "New workshop event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "69397b789aa7661e3aa67566"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T13:54:01.235Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69397b799aa7661e3aa67570"
+  },
+  "user_id": {
+    "$oid": "6932e76ade6c725347a61794"
+  },
+  "message": "New workshop event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "69397b789aa7661e3aa67566"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T13:54:01.235Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69397b799aa7661e3aa67571"
+  },
+  "user_id": {
+    "$oid": "6936dc2c82ea4f862438367c"
+  },
+  "message": "New workshop event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "69397b789aa7661e3aa67566"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T13:54:01.236Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69397b799aa7661e3aa67572"
+  },
+  "user_id": {
+    "$oid": "69381ec92442d0a2a0a915aa"
+  },
+  "message": "New workshop event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "69397b789aa7661e3aa67566"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T13:54:01.236Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69397b799aa7661e3aa67573"
+  },
+  "user_id": {
+    "$oid": "693841e0404b4cc7b7f198f9"
+  },
+  "message": "New workshop event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "69397b789aa7661e3aa67566"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T13:54:01.236Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69397b799aa7661e3aa67574"
+  },
+  "user_id": {
+    "$oid": "693845e4366d537374d4714e"
+  },
+  "message": "New workshop event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "69397b789aa7661e3aa67566"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T13:54:01.236Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69397b799aa7661e3aa67575"
+  },
+  "user_id": {
+    "$oid": "69385afbc61bd84ff269f56b"
+  },
+  "message": "New workshop event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "69397b789aa7661e3aa67566"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T13:54:01.236Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69397b799aa7661e3aa67576"
+  },
+  "user_id": {
+    "$oid": "69385e35470f07a95760d924"
+  },
+  "message": "New workshop event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "69397b789aa7661e3aa67566"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T13:54:01.236Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69397b799aa7661e3aa67577"
+  },
+  "user_id": {
+    "$oid": "693866ebf0969b467fb9d1c9"
+  },
+  "message": "New workshop event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "69397b789aa7661e3aa67566"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T13:54:01.236Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69397b799aa7661e3aa67578"
+  },
+  "user_id": {
+    "$oid": "6938682da295b788cda7e346"
+  },
+  "message": "New workshop event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "69397b789aa7661e3aa67566"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T13:54:01.236Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693980833f4dfc756c4d4006"
+  },
+  "user_id": {
+    "$oid": "6932e052b3b9636fae9cdb5a"
+  },
+  "message": "New seminar event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "693980833f4dfc756c4d3ffe"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T14:15:31.593Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693980833f4dfc756c4d4007"
+  },
+  "user_id": {
+    "$oid": "6932e680de6c725347a61777"
+  },
+  "message": "New seminar event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "693980833f4dfc756c4d3ffe"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T14:15:31.593Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693980833f4dfc756c4d4008"
+  },
+  "user_id": {
+    "$oid": "6932e76ade6c725347a61794"
+  },
+  "message": "New seminar event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "693980833f4dfc756c4d3ffe"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T14:15:31.594Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693980833f4dfc756c4d4009"
+  },
+  "user_id": {
+    "$oid": "6936dc2c82ea4f862438367c"
+  },
+  "message": "New seminar event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "693980833f4dfc756c4d3ffe"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T14:15:31.594Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693980833f4dfc756c4d400a"
+  },
+  "user_id": {
+    "$oid": "69381ec92442d0a2a0a915aa"
+  },
+  "message": "New seminar event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "693980833f4dfc756c4d3ffe"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T14:15:31.594Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693980833f4dfc756c4d400b"
+  },
+  "user_id": {
+    "$oid": "693841e0404b4cc7b7f198f9"
+  },
+  "message": "New seminar event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "693980833f4dfc756c4d3ffe"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T14:15:31.594Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693980833f4dfc756c4d400c"
+  },
+  "user_id": {
+    "$oid": "693845e4366d537374d4714e"
+  },
+  "message": "New seminar event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "693980833f4dfc756c4d3ffe"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T14:15:31.594Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693980833f4dfc756c4d400d"
+  },
+  "user_id": {
+    "$oid": "69385afbc61bd84ff269f56b"
+  },
+  "message": "New seminar event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "693980833f4dfc756c4d3ffe"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T14:15:31.594Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693980833f4dfc756c4d400e"
+  },
+  "user_id": {
+    "$oid": "69385e35470f07a95760d924"
+  },
+  "message": "New seminar event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "693980833f4dfc756c4d3ffe"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T14:15:31.594Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693980833f4dfc756c4d400f"
+  },
+  "user_id": {
+    "$oid": "693866ebf0969b467fb9d1c9"
+  },
+  "message": "New seminar event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "693980833f4dfc756c4d3ffe"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T14:15:31.594Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693980833f4dfc756c4d4010"
+  },
+  "user_id": {
+    "$oid": "6938682da295b788cda7e346"
+  },
+  "message": "New seminar event \"Full Stack\" at IIT Bombay on 12/11/2025",
+  "type": "event_created",
+  "related_event": {
+    "$oid": "693980833f4dfc756c4d3ffe"
+  },
+  "related_registration": null,
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T14:15:31.594Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693980bb3f4dfc756c4d4077"
+  },
+  "user_id": {
+    "$oid": "6932e680de6c725347a61777"
+  },
+  "message": "Your registration for \"Full Stack\" has been approved! See you at the event.",
+  "type": "registration_approved",
+  "related_event": {
+    "$oid": "69397b789aa7661e3aa67566"
+  },
+  "related_registration": {
+    "$oid": "69397c049aa7661e3aa676b7"
+  },
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T14:16:27.652Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693980bc3f4dfc756c4d4081"
+  },
+  "user_id": {
+    "$oid": "69381ec92442d0a2a0a915aa"
+  },
+  "message": "Your registration for \"fsdfs\" has been approved! See you at the event.",
+  "type": "registration_approved",
+  "related_event": {
+    "$oid": "69338aad33a705832ba77252"
+  },
+  "related_registration": {
+    "$oid": "69381f132442d0a2a0a915e9"
+  },
+  "related_feedback": null,
+  "replied_by": null,
+  "read": false,
+  "created_at": {
+    "$date": "2025-12-10T14:16:28.903Z"
+  },
+  "__v": 0
+}]
