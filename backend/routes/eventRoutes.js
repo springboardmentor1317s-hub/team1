@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+// proper routing is made and it is functional
 const auth = require("../middleware/auth");
 const authorizeRoles = require("../middleware/roles");
 const {

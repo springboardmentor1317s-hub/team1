@@ -2,6 +2,7 @@ const Event = require("../models/Event");
 
 exports.createEvent = async (req, res, next) => {
   try {
+    // creation of different attributes for the events
     const {
       title,
       description,

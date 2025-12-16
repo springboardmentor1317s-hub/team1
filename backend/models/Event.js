@@ -7,6 +7,7 @@ const eventSchema = new mongoose.Schema(
     description: { type: String, required: true },
     category: {
       type: String,
+      // creation of different types of events
       enum: ["sports", "hackathon", "cultural", "workshop", "other"],
       default: "other"
     },
