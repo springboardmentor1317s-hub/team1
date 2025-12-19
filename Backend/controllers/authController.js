@@ -1,4 +1,6 @@
+
 const crypto = require("crypto");
+const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
@@ -19,7 +21,6 @@ exports.register = async (req, res) => {
       return res.status(400).json({ error: 'User with this email already exists' });
     }
 
-    // Create new user
     const user = await User.create({
       name,
       email,
@@ -28,20 +29,35 @@ exports.register = async (req, res) => {
       role
     });
 
-    // Generate token
-    const token = generateToken(user._id);
+    const otp = String(Math.floor(100000 + Math.random() * 900000));
+    const otpHash = await bcrypt.hash(otp, 10);
+    user.isVerified = false;
+    user.otpCodeHash = otpHash;
+    user.otpExpires = Date.now() + 10 * 60 * 1000;
+    await user.save();
 
-    res.status(201).json({
+    const { sendSignupOtpEmail } = require('../utils/emailService');
+    const emailResult = await sendSignupOtpEmail(user, otp);
+
+    const payload = {
       success: true,
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        college: user.college,
-        role: user.role
+      requiresVerification: true,
+      user: { id: user._id, email: user.email }
+    };
+
+    if (emailResult && emailResult.success) {
+      payload.message = 'OTP sent to your email';
+    } else {
+      console.warn('Signup OTP email failed:', emailResult?.error || emailResult?.message);
+      if (process.env.NODE_ENV === 'development') {
+        payload.message = 'Email not configured; using dev OTP';
+        payload.debugOtp = otp;
+      } else {
+        payload.message = 'Unable to send OTP email. Please try again later.';
       }
-    });
+    }
+
+    res.status(201).json(payload);
   } catch (error) {
     console.error('Register error:', error);
     // Log more detailed error information
@@ -64,6 +80,9 @@ exports.login = async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
+    if (!user.isVerified) {
+      return res.status(403).json({ error: 'Please verify your email to continue' });
+    }
     // Check if password matches
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
@@ -89,6 +108,90 @@ exports.login = async (req, res) => {
     });
   } catch (error) {
     console.error('Login error:', error);
+    res.status(500).json({ error: 'Server error. Please try again later.' });
+  }
+};
+
+exports.verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const user = await User.findOne({ email }).select('+password');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (!user.otpCodeHash || !user.otpExpires || user.otpExpires < Date.now()) {
+      return res.status(400).json({ error: 'OTP expired. Please request a new one.' });
+    }
+
+    const isValid = await bcrypt.compare(otp, user.otpCodeHash);
+    if (!isValid) {
+      return res.status(400).json({ error: 'Invalid OTP' });
+    }
+
+    user.isVerified = true;
+    user.otpCodeHash = undefined;
+    user.otpExpires = undefined;
+    await user.save();
+
+    const token = generateToken(user._id);
+    res.status(200).json({
+      success: true,
+      message: 'Email verified successfully',
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        college: user.college,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    console.error('Verify OTP error:', error);
+    res.status(500).json({ error: 'Server error. Please try again later.' });
+  }
+};
+
+exports.resendOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({ error: 'Email already verified' });
+    }
+
+    const otp = String(Math.floor(100000 + Math.random() * 900000));
+    const otpHash = await bcrypt.hash(otp, 10);
+    user.otpCodeHash = otpHash;
+    user.otpExpires = Date.now() + 10 * 60 * 1000;
+    await user.save();
+
+    const { sendSignupOtpEmail } = require('../utils/emailService');
+    const emailResult = await sendSignupOtpEmail(user, otp);
+
+    const payload = { success: true };
+    if (emailResult && emailResult.success) {
+      payload.message = 'OTP resent to your email';
+    } else {
+      console.warn('Resend OTP email failed:', emailResult?.error || emailResult?.message);
+      if (process.env.NODE_ENV === 'development') {
+        payload.message = 'Email not configured; using dev OTP';
+        payload.debugOtp = otp;
+      } else {
+        payload.message = 'Unable to resend OTP email. Please try again later.';
+      }
+    }
+
+    res.status(200).json(payload);
+  } catch (error) {
+    console.error('Resend OTP error:', error);
     res.status(500).json({ error: 'Server error. Please try again later.' });
   }
 };
