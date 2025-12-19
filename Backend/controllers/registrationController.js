@@ -1,7 +1,136 @@
 const Registration = require('../models/Registration');
 const Event = require('../models/Event');
+const User = require('../models/User');
 const path = require('path');
 const XLSX = require('xlsx');
+const QRCode = require('qrcode');
+
+exports.authenticateCredentials = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+    const user = await User.findOne({ email }).select('+password');
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    if (!user.isActive) {
+      return res.status(403).json({ error: 'Your account has been deactivated' });
+    }
+    req.user = user;
+    next();
+  } catch (error) {
+    res.status(500).json({ error: 'Authentication failed' });
+  }
+};
+
+exports.initiatePaymentForApprovedRegistration = async (req, res) => {
+  try {
+    const { registrationId } = req.params;
+    const registration = await Registration.findById(registrationId).populate('event_id').populate('user_id', 'email');
+    if (!registration) {
+      return res.status(404).json({ error: 'Registration not found' });
+    }
+    if (registration.user_id._id.toString() !== req.user.id) {
+      return res.status(403).json({ error: 'Not authorized to pay for this registration' });
+    }
+    const event = registration.event_id;
+    if (!event || event.price <= 0) {
+      return res.status(400).json({ error: 'Payment not required for this event' });
+    }
+    if (registration.status !== 'approved') {
+      return res.status(400).json({ error: 'Admin approval required before payment' });
+    }
+    if (registration.payment_status === 'paid') {
+      return res.status(400).json({ error: 'Payment already completed' });
+    }
+    if (!stripe) {
+      return res.status(500).json({ error: 'Payment service unavailable' });
+    }
+    const frontendBase = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'payment',
+      line_items: [{
+        price_data: {
+          currency: 'inr',
+          product_data: {
+            name: event.title,
+            description: `Registration fee for ${event.title}`,
+            images: event.image ? [`${frontendBase}/api/events/uploads/${path.basename(event.image)}`] : []
+          },
+          unit_amount: Math.round(event.price * 100),
+        },
+        quantity: 1,
+      }],
+      metadata: {
+        registrationId: registration._id.toString(),
+        eventId: event._id.toString(),
+        userId: req.user.id
+      },
+      customer_email: registration.user_id.email,
+      success_url: `${frontendBase}/event-register/${event._id}?payment_success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${frontendBase}/event-register/${event._id}?payment_cancelled=true`,
+      expires_at: Math.floor(Date.now() / 1000) + (30 * 60)
+    });
+    const qrDataUrl = await QRCode.toDataURL(session.url);
+    return res.status(200).json({
+      success: true,
+      paymentUrl: session.url,
+      sessionId: session.id,
+      qr: qrDataUrl
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message || 'Failed to initiate payment' });
+  }
+};
+
+exports.verifyPaymentAndMarkPaid = async (req, res) => {
+  try {
+    const { sessionId } = req.body;
+    const userId = req.user.id;
+    if (!sessionId) {
+      return res.status(400).json({ error: 'Session ID is required' });
+    }
+    if (!stripe) {
+      return res.status(500).json({ error: 'Payment service unavailable' });
+    }
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    if (session.payment_status !== 'paid') {
+      return res.status(400).json({ error: 'Payment not completed' });
+    }
+    const { registrationId } = session.metadata || {};
+    if (!registrationId) {
+      return res.status(400).json({ error: 'Registration ID missing in session metadata' });
+    }
+    const registration = await Registration.findById(registrationId).populate('event_id').populate('user_id');
+    if (!registration) {
+      return res.status(404).json({ error: 'Registration not found' });
+    }
+    if (registration.user_id._id.toString() !== userId) {
+      return res.status(403).json({ error: 'Not authorized to update this registration' });
+    }
+    registration.payment_status = 'paid';
+    registration.stripe_payment_id = session.payment_intent || session.id;
+    await registration.save();
+    return res.status(200).json({
+      success: true,
+      message: 'Payment verified successfully',
+      data: {
+        registrationId: registration._id,
+        status: registration.status,
+        payment_status: registration.payment_status
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message || 'Failed to verify payment' });
+  }
+};
 
 // Initialize Stripe with better error handling
 let stripe = null;
@@ -58,136 +187,20 @@ exports.registerForEvent = async (req, res) => {
       });
     }
 
-    // Handle payment for paid events
-    if (event.price > 0) {
-      // Check if payment method is specified in request body
-      const { paymentMethod } = req.body;
-
-      if (paymentMethod === 'qr') {
-        // QR Code payment - create registration with pending status
-        try {
-          const registration = await Registration.create({
-            event_id: eventId,
-            user_id: userId,
-            status: 'pending',
-            payment_method: 'qr',
-            payment_status: 'pending'
-          });
-
-          return res.status(200).json({
-            success: true,
-            paymentMethod: 'qr',
-            qrImageUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment.jpg`,
-            amount: event.price,
-            message: 'Please scan the QR code to complete payment. Your registration will be confirmed after payment verification.',
-            registrationId: registration._id
-          });
-        } catch (dbError) {
-          console.error('Database error creating QR registration:', dbError);
-          throw new Error('Failed to create registration record');
-        }
-      } else {
-        // Default to Stripe payment
-        if (!stripe) {
-          return res.status(500).json({
-            error: 'Payment processing is temporarily unavailable. Please try again later or contact administrator.'
-          });
-        }
-
-        try {
-          const frontendBase = process.env.FRONTEND_URL || 'http://localhost:5173';
-
-          // Validate required data for Stripe session
-          if (!event.title || !event._id) {
-            throw new Error('Event data incomplete for payment processing');
-          }
-
-          const sessionData = {
-            payment_method_types: ['card'],
-            mode: 'payment',
-            line_items: [{
-              price_data: {
-                currency: 'inr',
-                product_data: {
-                  name: event.title,
-                  description: `Registration for ${event.title} at ${event.college_name || 'Campus Event'}`,
-                  images: event.image ? [`${frontendBase}/api/events/uploads/${path.basename(event.image)}`] : []
-                },
-                unit_amount: Math.round(event.price * 100), // Convert to paise (smallest currency unit)
-              },
-              quantity: 1,
-            }],
-            metadata: {
-              eventId: event._id.toString(),
-              userId: userId,
-              eventTitle: event.title,
-              userEmail: req.user.email || 'N/A'
-            },
-            customer_email: req.user.email,
-            success_url: `${frontendBase}/event-register/${eventId}?payment_success=true&session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${frontendBase}/event-register/${eventId}?payment_cancelled=true`,
-            expires_at: Math.floor(Date.now() / 1000) + (30 * 60), // 30 minutes
-          };
-
-          const session = await stripe.checkout.sessions.create(sessionData);
-
-          return res.status(200).json({
-            success: true,
-            paymentMethod: 'stripe',
-            paymentUrl: session.url,
-            sessionId: session.id,
-            amount: session.amount_total / 100, // Convert back to rupees for display
-            currency: session.currency
-          });
-
-        } catch (stripeError) {
-          console.error('Stripe session creation error:', {
-            type: stripeError.type,
-            message: stripeError.message
-          });
-
-          // Return more specific error messages based on Stripe error type
-          let errorMessage = 'Failed to create payment session.';
-
-          if (stripeError.type === 'StripeInvalidRequestError') {
-            if (stripeError.param) {
-              errorMessage = `Invalid payment parameter: ${stripeError.param}. Please contact support.`;
-            } else {
-              errorMessage = 'Invalid payment request. Please contact support.';
-            }
-          } else if (stripeError.type === 'StripeAPIError') {
-            errorMessage = 'Payment service temporarily unavailable. Please try again.';
-          } else if (stripeError.type === 'StripeConnectionError') {
-            errorMessage = 'Network error. Please check your connection.';
-          } else if (stripeError.type === 'StripeAuthenticationError') {
-            errorMessage = 'Payment authentication failed. Please contact administrator.';
-          } else if (stripeError.type === 'StripeRateLimitError') {
-            errorMessage = 'Too many requests. Please try again later.';
-          }
-
-          return res.status(500).json({
-            error: errorMessage,
-            details: process.env.NODE_ENV === 'development' ? {
-              type: stripeError.type,
-              message: stripeError.message,
-              param: stripeError.param
-            } : undefined
-          });
-        }
-      }
-    }
-
-    // Create new registration with pending status for free events
+    // Create new registration with pending status
     try {
       const registration = await Registration.create({
         event_id: eventId,
         user_id: userId,
-        status: 'pending'
+        status: 'pending',
+        payment_status: event.price > 0 ? 'unpaid' : 'paid'
       });
 
       res.status(201).json({
         success: true,
-        message: 'Registration successful. Awaiting approval.',
+        message: event.price > 0 
+          ? 'Registration submitted. Awaiting admin approval before payment.' 
+          : 'Registration successful. Awaiting approval.',
         data: { registration }
       });
 
@@ -449,12 +462,43 @@ exports.getAllRegistrations = async (req, res) => {
     }
 
     // Filter out registrations where user has been deleted
-    const validRegistrations = registrations.filter(reg => 
+    let validRegistrations = registrations.filter(reg => 
       reg.user_id !== null && reg.event_id !== null
     );
 
+    // Apply search and filters
+    const search = req.query.q || req.query.search || '';
+    const category = req.query.category || req.query.type;
+    const status = req.query.status;
+    if (search) {
+      const regex = new RegExp(search, 'i');
+      validRegistrations = validRegistrations.filter(reg => 
+        regex.test(reg.user_id.name || '') ||
+        regex.test(reg.user_id.email || '') ||
+        regex.test(reg.user_id.college || '') ||
+        regex.test(reg.event_id.title || '') ||
+        regex.test(reg.event_id.college_name || '') ||
+        regex.test(reg.event_id.location || '')
+      );
+    }
+    if (category) {
+      validRegistrations = validRegistrations.filter(reg => reg.event_id.category === category);
+    }
+    if (status) {
+      validRegistrations = validRegistrations.filter(reg => reg.status === status);
+    }
+
+    // Pagination
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const total = validRegistrations.length;
+    const totalPages = Math.ceil(total / limit);
+    const start = (page - 1) * limit;
+    const end = start + limit;
+    const pageItems = validRegistrations.slice(start, end);
+
     // Format the data to include event information
-    const formattedRegistrations = validRegistrations.map(reg => ({
+    const formattedRegistrations = pageItems.map(reg => ({
       _id: reg._id,
       user_id: reg.user_id,
       event_id: {
@@ -470,7 +514,16 @@ exports.getAllRegistrations = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: { registrations: formattedRegistrations }
+      data: { 
+        registrations: formattedRegistrations,
+        pagination: {
+          current_page: page,
+          total_pages: totalPages,
+          total_registrations: total,
+          has_next: page < totalPages,
+          has_prev: page > 1
+        }
+      }
     });
 
   } catch (error) {
@@ -580,6 +633,16 @@ exports.updateRegistrationStatus = async (req, res) => {
 
     // Send email with ticket for approved registrations
     if (status === 'approved') {
+      if (registration.event_id.price > 0 && registration.payment_status !== 'paid') {
+        return res.status(200).json({
+          success: true,
+          message: 'Registration approved. Payment required to finalize.',
+          data: { 
+            registration,
+            payment_required: true 
+          }
+        });
+      }
       try {
         const { sendTicketApprovalEmail } = require('../utils/emailService');
         const emailResult = await sendTicketApprovalEmail(
@@ -587,7 +650,6 @@ exports.updateRegistrationStatus = async (req, res) => {
           registration.event_id,
           registration
         );
-        
         if (!emailResult.success) {
           console.log('Ticket approval email not sent:', emailResult.message || emailResult.error);
         }
