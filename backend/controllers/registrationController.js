@@ -1,6 +1,18 @@
 const Registration = require("../models/Registration");
 const AdminLog = require("../models/AdminLog");
 
+exports.getMyRegistrations = async (req, res, next) => {
+  try {
+    const regs = await Registration.find({ user_id: req.user._id })
+      .populate("event_id")
+      .sort({ timestamp: -1 });
+
+    res.json(regs);
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.registerForEvent = async (req, res, next) => {
   try {
     const { event_id } = req.body;
@@ -21,18 +33,6 @@ exports.registerForEvent = async (req, res, next) => {
     });
 
     res.status(201).json(reg);
-  } catch (err) {
-    next(err);
-  }
-};
-
-exports.getMyRegistrations = async (req, res, next) => {
-  try {
-    const regs = await Registration.find({ user_id: req.user._id })
-      .populate("event_id")
-      .sort({ timestamp: -1 });
-
-    res.json(regs);
   } catch (err) {
     next(err);
   }

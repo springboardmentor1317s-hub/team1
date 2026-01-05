@@ -60,6 +60,17 @@ exports.getEventById = async (req, res, next) => {
   }
 };
 
+exports.getMyEvents = async (req, res, next) => {
+  try {
+    const events = await Event.find({ college_id: req.user._id }).sort({
+      created_at: -1
+    });
+    res.json(events);
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.updateEvent = async (req, res, next) => {
   try {
     const event = await Event.findOneAndUpdate(
@@ -95,13 +106,3 @@ exports.deleteEvent = async (req, res, next) => {
   }
 };
 
-exports.getMyEvents = async (req, res, next) => {
-  try {
-    const events = await Event.find({ college_id: req.user._id }).sort({
-      created_at: -1
-    });
-    res.json(events);
-  } catch (err) {
-    next(err);
-  }
-};

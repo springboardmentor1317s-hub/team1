@@ -9,11 +9,11 @@ const {
   updateRegistrationStatus
 } = require("../controllers/registrationController");
 
-// student
+// route passed for student
 router.post("/", auth, registerForEvent);
 router.get("/my", auth, getMyRegistrations);
 
-// admin
+// route passed for admin
 router.get(
   "/event/:eventId",
   auth,
