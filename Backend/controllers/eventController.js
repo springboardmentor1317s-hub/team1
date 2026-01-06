@@ -40,9 +40,9 @@ exports.createEvent = async (req, res) => {
     const endDate = new Date(end_date);
     const now = new Date();
 
-    if (startDate <= now) {
+    if (startDate < now) {
       if (req.file) deleteUploadedFile(req.file.path);
-      return res.status(400).json({ error: 'Start date must be in the future' });
+      return res.status(400).json({ error: 'Start date cannot be in the past' });
     }
 
     if (endDate <= startDate) {
@@ -323,8 +323,8 @@ exports.updateEvent = async (req, res) => {
       const startDate = new Date(updates.start_date || event.start_date);
       const endDate = new Date(updates.end_date || event.end_date);
       
-      if (startDate <= new Date()) {
-        return res.status(400).json({ error: 'Start date must be in the future' });
+      if (startDate < new Date()) {
+        return res.status(400).json({ error: 'Start date cannot be in the past' });
       }
       
       if (endDate <= startDate) {
@@ -471,6 +471,93 @@ exports.getFeaturedEvents = async (req, res) => {
   } catch (error) {
     console.error('Get featured events error:', error);
     res.status(500).json({ error: 'Failed to fetch featured events' });
+  }
+};
+
+// Search events
+exports.searchEvents = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const search = req.query.q || req.query.search || '';
+    const type = req.query.type || req.query.category;
+    const filter = {};
+    if (search) {
+      filter.$or = [
+        { title: new RegExp(search, 'i') },
+        { description: new RegExp(search, 'i') },
+        { college_name: new RegExp(search, 'i') },
+        { location: new RegExp(search, 'i') }
+      ];
+    }
+    if (type) {
+      filter.category = type;
+    }
+    const events = await Event.find(filter)
+      .populate('created_by', 'name email college role')
+      .populate('college_id', 'name college')
+      .sort({ start_date: -1 })
+      .skip(skip)
+      .limit(limit);
+    const total = await Event.countDocuments(filter);
+    res.status(200).json({
+      success: true,
+      data: {
+        events,
+        pagination: {
+          current_page: page,
+          total_pages: Math.ceil(total / limit),
+          total_events: total,
+          has_next: page < Math.ceil(total / limit),
+          has_prev: page > 1
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Search events error:', error);
+    res.status(500).json({ error: 'Failed to search events' });
+  }
+};
+
+// Get events by type (category)
+exports.getEventsByType = async (req, res) => {
+  try {
+    const type = req.params.type || req.query.type || req.query.category;
+    if (!type) {
+      return res.status(400).json({ error: 'Event type is required' });
+    }
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const filter = { category: type };
+    if (req.query.upcoming === 'true') {
+      filter.start_date = { $gte: new Date() };
+      filter.status = { $in: ['upcoming', 'active'] };
+    }
+    const events = await Event.find(filter)
+      .populate('created_by', 'name email college role')
+      .populate('college_id', 'name college')
+      .sort({ start_date: -1 })
+      .skip(skip)
+      .limit(limit);
+    const total = await Event.countDocuments(filter);
+    res.status(200).json({
+      success: true,
+      data: {
+        events,
+        pagination: {
+          current_page: page,
+          total_pages: Math.ceil(total / limit),
+          total_events: total,
+          has_next: page < Math.ceil(total / limit),
+          has_prev: page > 1
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Get events by type error:', error);
+    res.status(500).json({ error: 'Failed to fetch events by type' });
   }
 };
 
