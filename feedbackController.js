@@ -446,13 +446,14 @@ exports.updateComment = async (req, res) => {
 
 // @desc    Delete comment
 // @route   DELETE /api/feedback/comments/:id
-// @access  Private (Student - own comment only)
+// @access  Private (Comment owner OR Admin)
 exports.deleteComment = async (req, res) => {
   try {
     const { id } = req.params;
     const user_id = req.user.id;
+    const user_role = req.user.role;
 
-    // Find comment
+    // 1️⃣ Find comment
     const comment = await Comment.findById(id);
     if (!comment) {
       return res.status(404).json({
@@ -461,17 +462,22 @@ exports.deleteComment = async (req, res) => {
       });
     }
 
-    // Check if user owns this comment
-    if (comment.user_id.toString() !== user_id) {
+    // 2️⃣ Permission check
+    const isAdmin =
+      user_role === 'college_admin' || user_role === 'super_admin';
+    const isOwner = comment.user_id.toString() === user_id;
+
+    if (!isAdmin && !isOwner) {
       return res.status(403).json({
         success: false,
-        message: 'You can only delete your own comments'
+        message: 'You are not authorized to delete this comment'
       });
     }
 
-    // Delete comment
+    // 3️⃣ Delete comment
     await Comment.findByIdAndDelete(id);
 
+    // 4️⃣ Success response
     res.status(200).json({
       success: true,
       message: 'Comment deleted successfully'
@@ -684,4 +690,3 @@ exports.getAllFeedbacksForAdmin = async (req, res) => {
     });
   }
 };
-
