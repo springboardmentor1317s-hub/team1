@@ -5,12 +5,15 @@ const Registration = require('../models/Registration');
 const Notification = require('../models/Notification');
 const User = require('../models/User');
 
-
+// @desc    Create new feedback for an event
+// @route   POST /api/feedback
+// @access  Private (Student)
 exports.createFeedback = async (req, res) => {
   try {
     const { event_id, rating, comments } = req.body;
     const user_id = req.user.id;
 
+    // Validate required fields
     if (!event_id || !rating || !comments) {
       return res.status(400).json({
         success: false,
@@ -18,6 +21,7 @@ exports.createFeedback = async (req, res) => {
       });
     }
 
+    // Check if event exists
     const event = await Event.findById(event_id);
     if (!event) {
       return res.status(404).json({
@@ -26,7 +30,7 @@ exports.createFeedback = async (req, res) => {
       });
     }
 
- 
+    // Check if user has registered for this event
     const registration = await Registration.findOne({
       event_id,
       user_id,
@@ -49,6 +53,7 @@ exports.createFeedback = async (req, res) => {
       });
     }
 
+    // Create feedback
     const feedback = await Feedback.create({
       event_id,
       user_id,
@@ -56,12 +61,14 @@ exports.createFeedback = async (req, res) => {
       comments
     });
 
+    // Update event rating
     const { average, count } = await Feedback.calculateEventRating(event_id);
     await Event.findByIdAndUpdate(event_id, {
       'rating.average': average,
       'rating.count': count
     });
 
+    // Populate user details
     await feedback.populate('user_id', 'name college');
 
     res.status(201).json({
@@ -71,7 +78,8 @@ exports.createFeedback = async (req, res) => {
     });
   } catch (error) {
     console.error('Error creating feedback:', error);
-
+    
+    // Handle duplicate feedback error
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
@@ -87,6 +95,9 @@ exports.createFeedback = async (req, res) => {
   }
 };
 
+// @desc    Get all feedbacks for an event
+// @route   GET /api/feedback/event/:eventId
+// @access  Public
 exports.getEventFeedbacks = async (req, res) => {
   try {
     const { eventId } = req.params;
@@ -100,13 +111,16 @@ exports.getEventFeedbacks = async (req, res) => {
       });
     }
 
+    // Get all feedbacks for the event with populated replies
     const feedbacks = await Feedback.find({ event_id: eventId })
       .populate('user_id', 'name college email role')
       .populate('replies.user_id', 'name college role')
       .sort({ timestamp: -1 });
 
+    // Get rating distribution
     const distribution = await Feedback.getRatingDistribution(eventId);
 
+    // Calculate average rating
     const { average, count } = await Feedback.calculateEventRating(eventId);
 
     res.status(200).json({
@@ -130,6 +144,9 @@ exports.getEventFeedbacks = async (req, res) => {
   }
 };
 
+// @desc    Update feedback
+// @route   PUT /api/feedback/:id
+// @access  Private (Student - own feedback only)
 exports.updateFeedback = async (req, res) => {
   try {
     const { id } = req.params;
@@ -145,17 +162,21 @@ exports.updateFeedback = async (req, res) => {
       });
     }
 
+    // Check if user owns this feedback
     if (feedback.user_id.toString() !== user_id) {
       return res.status(403).json({
         success: false,
         message: 'You can only update your own feedback'
       });
     }
+
+    // Update feedback
     if (rating) feedback.rating = rating;
     if (comments) feedback.comments = comments;
 
     await feedback.save();
 
+    // Update event rating
     const { average, count } = await Feedback.calculateEventRating(feedback.event_id);
     await Event.findByIdAndUpdate(feedback.event_id, {
       'rating.average': average,
@@ -179,7 +200,9 @@ exports.updateFeedback = async (req, res) => {
   }
 };
 
-
+// @desc    Delete feedback
+// @route   DELETE /api/feedback/:id
+// @access  Private (Student - own feedback only, Admin - any feedback)
 exports.deleteFeedback = async (req, res) => {
   try {
     const { id } = req.params;
@@ -232,7 +255,9 @@ exports.deleteFeedback = async (req, res) => {
   }
 };
 
-
+// @desc    Check if user can provide feedback
+// @route   GET /api/feedback/can-feedback/:eventId
+// @access  Private (Student)
 exports.canProvideFeedback = async (req, res) => {
   try {
     const { eventId } = req.params;
@@ -282,7 +307,86 @@ exports.canProvideFeedback = async (req, res) => {
   }
 };
 
+// ============ COMMENT CONTROLLERS ============
 
+// @desc    Create new comment for an event
+// @route   POST /api/feedback/comments
+// @access  Private (Student)
+exports.createComment = async (req, res) => {
+  try {
+    const { event_id, text } = req.body;
+    const user_id = req.user.id;
+
+    // Validate required fields
+    if (!event_id || !text) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide event_id and text'
+      });
+    }
+
+    // Check if event exists
+    const event = await Event.findById(event_id);
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found'
+      });
+    }
+
+    // Create comment
+    const comment = await Comment.create({
+      event_id,
+      user_id,
+      text
+    });
+
+    // Populate user details
+    await comment.populate('user_id', 'name college');
+
+    res.status(201).json({
+      success: true,
+      message: 'Comment posted successfully',
+      data: comment
+    });
+  } catch (error) {
+    console.error('Error creating comment:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error creating comment',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Get all comments for an event
+// @route   GET /api/feedback/comments/event/:eventId
+// @access  Public
+exports.getEventComments = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    // Check if event exists
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found'
+      });
+    }
+
+    // Get all comments for the event
+    const comments = await Comment.find({ event_id: eventId })
+      .populate('user_id', 'name college email')
+      .sort({ timestamp: -1 });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        comments,
+        count: comments.length
+      }
+    });
   } catch (error) {
     console.error('Error fetching comments:', error);
     res.status(500).json({
@@ -293,7 +397,9 @@ exports.canProvideFeedback = async (req, res) => {
   }
 };
 
-
+// @desc    Update comment
+// @route   PUT /api/feedback/comments/:id
+// @access  Private (Student - own comment only)
 exports.updateComment = async (req, res) => {
   try {
     const { id } = req.params;
@@ -338,6 +444,9 @@ exports.updateComment = async (req, res) => {
   }
 };
 
+// @desc    Delete comment
+// @route   DELETE /api/feedback/comments/:id
+// @access  Private (Student - own comment only)
 exports.deleteComment = async (req, res) => {
   try {
     const { id } = req.params;
@@ -377,7 +486,11 @@ exports.deleteComment = async (req, res) => {
   }
 };
 
+// ============ REPLY CONTROLLERS (For threaded replies to feedback) ============
 
+// @desc    Add reply to feedback
+// @route   POST /api/feedback/:feedbackId/reply
+// @access  Private (Any logged-in user)
 exports.addReplyToFeedback = async (req, res) => {
   try {
     const { feedbackId } = req.params;
@@ -462,7 +575,9 @@ exports.addReplyToFeedback = async (req, res) => {
   }
 };
 
-
+// @desc    Delete reply from feedback
+// @route   DELETE /api/feedback/:feedbackId/reply/:replyId
+// @access  Private (Reply owner or Admin)
 exports.deleteReplyFromFeedback = async (req, res) => {
   try {
     const { feedbackId, replyId } = req.params;
@@ -516,8 +631,50 @@ exports.deleteReplyFromFeedback = async (req, res) => {
   }
 };
 
+// ============ ADMIN CONTROLLERS ============
 
+// @desc    Get all feedbacks for admin (across all events)
+// @route   GET /api/feedback/admin/all
+// @access  Private (Admin only)
+exports.getAllFeedbacksForAdmin = async (req, res) => {
+  try {
+    const feedbacks = await Feedback.find()
+      .populate('user_id', 'name email college role')
+      .populate('event_id', 'title category start_date')
+      .populate({
+        path: 'replies.user_id',
+        select: 'name college role'
+      })
+      .sort({ timestamp: -1 })
+      .lean();
 
+    // Calculate stats
+    const totalFeedbacks = feedbacks.length;
+    const averageRating = feedbacks.length > 0 
+      ? feedbacks.reduce((sum, f) => sum + f.rating, 0) / feedbacks.length 
+      : 0;
+    
+    // Count unique events with reviews
+    const uniqueEvents = new Set(feedbacks.map(f => f.event_id?._id?.toString()).filter(Boolean));
+    const totalEvents = uniqueEvents.size;
+    
+    // Count recent feedbacks (last 7 days)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const recentFeedbacks = feedbacks.filter(f => new Date(f.timestamp) > sevenDaysAgo).length;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        feedbacks,
+        stats: {
+          totalFeedbacks,
+          averageRating: Math.round(averageRating * 10) / 10,
+          totalEvents,
+          recentFeedbacks
+        }
+      }
+    });
   } catch (error) {
     console.error('Error fetching all feedbacks for admin:', error);
     res.status(500).json({
