@@ -2,10 +2,10 @@ import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Calendar, Users, TrendingUp, BarChart3, Plus, Eye, Settings, 
          MessageSquare, Clock, Building, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 const Overview = ({
-  currentUser,
+  // currentUser,
   loading,
   events,
   analytics,
@@ -15,7 +15,7 @@ const Overview = ({
   HandleEventCreation,
   setActiveTab
 }) => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   // Move these functions to the main component scope
   const getSystemStatusColor = (status) => {
@@ -287,169 +287,6 @@ const Overview = ({
                     : 'N/A'}
                 </p>
                 <p className="text-xs text-gray-600">Most Popular</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Rest of the Overview component content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-          {/* Recent Events */}
-          <div className="lg:col-span-2 order-2 lg:order-1">
-            <h3 className="text-lg font-bold text-gray-800 mb-4">Your Events</h3>
-            <div className="space-y-4">
-              {loading ? (
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                  <p className="text-sm text-gray-500 mt-2">Loading your events...</p>
-                </div>
-              ) : events.length === 0 ? (
-                <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-                  <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                  <h4 className="text-lg font-medium text-gray-900 mb-2">No Events Created Yet</h4>
-                  <p className="text-gray-500 mb-4">Start by creating your first event to manage your campus activities.</p>
-                  <button 
-                    onClick={HandleEventCreation}
-                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create Your First Event
-                  </button>
-                </div>
-              ) : (
-                <>
-                  {events.slice(0, 3).map(event => (
-                    <EventCard key={event._id || event.id} event={event} />
-                  ))}
-                  {events.length > 3 && (
-                    <button
-                      onClick={() => setActiveTab('event-management')}
-                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all font-medium shadow-md flex items-center justify-center"
-                    >
-                      <Eye className="w-4 h-4 mr-2" />
-                      View All Events ({events.length})
-                    </button>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Sidebar - Quick Actions, Calendar & System Health */}
-          <div className="space-y-4 sm:space-y-6 order-1 lg:order-2">
-            {/* Quick Actions */}
-            <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
-              <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                <Settings className="w-5 h-5 mr-2" />
-                Quick Actions
-              </h3>
-              <div className="space-y-3">
-                <button 
-                  onClick={HandleEventCreation}
-                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all font-medium flex items-center justify-center"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create New Event
-                </button>
-            
-                <button 
-                  onClick={() => setActiveTab('registrations')}
-                  className="w-full bg-gray-100 text-gray-800 py-3 rounded-lg hover:bg-gray-200 transition-colors font-medium flex items-center justify-center"
-                >
-                  <Eye className="w-4 h-4 mr-2" />
-                  View All Registrations
-                </button>
-                <button 
-                  onClick={() => setActiveTab('feedback-analysis')}
-                  className="w-full bg-gray-100 text-gray-800 py-3 rounded-lg hover:bg-gray-200 transition-colors font-medium flex items-center justify-center"
-                >
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  View Feedback
-                </button>
-              </div>
-            </div>
-
-            {/* Recent Events Mini View */}
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-              <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                <Calendar className="w-5 h-5 mr-2" />
-                Recent Events
-              </h3>
-              <div className="space-y-3">
-                {loading ? (
-                  <div className="text-center py-4">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="text-sm text-gray-500 mt-2">Loading events...</p>
-                  </div>
-                ) : events.length === 0 ? (
-                  <div className="text-center py-4">
-                    <p className="text-sm text-gray-500">No events created yet</p>
-                  </div>
-                ) : (
-                  events.slice(0, 3).map(event => (
-                    <div key={event._id || event.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
-                        onClick={() => viewEventDetails(event)}>
-                      <div>
-                        <p className="font-medium text-sm text-gray-800">{event.title}</p>
-                        <p className="text-xs text-gray-500">{new Date(event.start_date || event.date).toLocaleDateString()}</p>
-                      </div>
-                      <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(event.status || 'upcoming')}`}>
-                        {event.status || 'upcoming'}
-                      </span>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-
-            {/* System Health */}
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-              <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                <TrendingUp className="w-5 h-5 mr-2" />
-                System Health
-              </h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Server Status</span>
-                  <span className={`flex items-center text-sm font-medium ${getSystemStatusColor(systemHealth.server?.status)}`}>
-                    {getStatusIcon(systemHealth.server?.status)}
-                    {systemHealth.server?.status || 'Loading...'}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Database</span>
-                  <span className={`flex items-center text-sm font-medium ${getSystemStatusColor(systemHealth.database?.status)}`}>
-                    {getStatusIcon(systemHealth.database?.status)}
-                    {systemHealth.database?.status || 'Loading...'}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">API Response</span>
-                  <span className={`flex items-center text-sm font-medium ${getSystemStatusColor(systemHealth.api?.status)}`}>
-                    {getStatusIcon(systemHealth.api?.status)}
-                    {systemHealth.api?.averageResponseTime || systemHealth.api?.status || 'Loading...'}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Uptime</span>
-                  <div className="text-right">
-                    <span className="text-sm font-medium text-gray-800">
-                      {systemHealth.uptime?.percentage || 'Loading...'}
-                    </span>
-                    {systemHealth.uptime?.duration && (
-                      <div className="text-xs text-gray-500">
-                        {systemHealth.uptime.duration}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                {systemHealth.timestamp && (
-                  <div className="pt-2 border-t border-gray-200">
-                    <span className="text-xs text-gray-500">
-                      Last updated: {new Date(systemHealth.timestamp).toLocaleTimeString()}
-                    </span>
-                  </div>
-                )}
               </div>
             </div>
           </div>

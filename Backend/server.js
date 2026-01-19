@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+require('dotenv').config();
+const app = require('./app');
+>>>>>>> 570f712 (feedback form is functional at both student as well as admin ends)
 
 
 

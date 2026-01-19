@@ -1,1 +1,11 @@
+<<<<<<< HEAD
 node_modules/ 
+=======
+node_modules/
+.env
+uploads/
+dist/
+build/
+.vscode/
+.DS_Store
+>>>>>>> 570f712 (feedback form is functional at both student as well as admin ends)
