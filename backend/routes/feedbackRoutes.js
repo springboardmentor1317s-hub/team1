@@ -5,5 +5,4 @@ const { addFeedback, getEventFeedback } = require("../controllers/feedbackContro
 
 router.post("/", auth, addFeedback);
 router.get("/event/:eventId", getEventFeedback);
-
 module.exports = router;

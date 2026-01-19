@@ -9,5 +9,4 @@ const feedbackSchema = new mongoose.Schema(
   },
   { timestamps: { createdAt: "timestamp", updatedAt: "updated_at" } }
 );
-
 module.exports = mongoose.model("Feedback", feedbackSchema);

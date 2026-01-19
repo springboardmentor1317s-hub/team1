@@ -25,6 +25,7 @@ const App = () => {
         <Route path="/register" element={user ? <Navigate to="/events" /> : <RegisterPage />} />
         <Route path="/events" element={<EventListPage />} />
         <Route path="/events/:id" element={<EventDetailsPage />} />
+        {/* Feedback route for specific event */}
         <Route
           path="/events/:id/feedback"
           element={
@@ -33,6 +34,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        {/* Dashboard routes */}
         <Route
           path="/dashboard"
           element={
@@ -41,6 +43,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        {/* Admin routes */}
         <Route
           path="/admin"
           element={
@@ -49,6 +52,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        {/* Event management routes for admins */}
         <Route
           path="/admin/events/new"
           element={
