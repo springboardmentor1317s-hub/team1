@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusEventHub TTS Demo</title>
+</head>
+<body>
+  <h1>Text-to-Speech Demo</h1>
+  <input type="text" id="textInput" placeholder="Enter text here" style="width:300px;">
+  <button id="speakBtn">Speak</button>
+
+  <audio id="audioPlayer" controls style="display:block; margin-top:20px;"></audio>
+
+  <script>
+    const speakBtn = document.getElementById('speakBtn');
+    const textInput = document.getElementById('textInput');
+    const audioPlayer = document.getElementById('audioPlayer');
+
+    speakBtn.addEventListener('click', async () => {
+      const text = textInput.value.trim();
+      if (!text) {
+        alert('Please enter some text!');
+        return;
+      }
+
+      try {
+        // Call your backend TTS API
+        const response = await fetch(`http://localhost:4000/api/tts?text=${encodeURIComponent(text)}`);
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          alert('Error: ' + errorData.error);
+          return;
+        }
+
+        const blob = await response.blob();
+        const audioUrl = URL.createObjectURL(blob);
+        audioPlayer.src = audioUrl;
+        audioPlayer.play();
+      } catch (err) {
+        console.error('Error fetching TTS:', err);
+        alert('Failed to generate TTS audio.');
+      }
+    });
+  </script>
+</body>
+</html>
