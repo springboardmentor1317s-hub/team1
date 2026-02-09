@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-=======
-require('dotenv').config();
-const app = require('./app');
->>>>>>> 570f712 (feedback form is functional at both student as well as admin ends)
-
-
-
-
 require('dotenv').config();          // Load environment variables
 const mongoose = require('mongoose');
 const app = require('./app');        // Import Express app from app.js
